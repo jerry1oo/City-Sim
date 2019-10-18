@@ -6,11 +6,25 @@ int Window::height;
 const char* Window::windowTitle = "GLFW Starter Project";
 
 // Objects to display.
-Cube * Window::cube;
-PointCloud * Window::cubePoints;
+//Cube * Window::cube;
+Triangle * Window::bear;
+Triangle * Window::bunny;
+Triangle * Window::dragon;
+
+Lighting * Window::LightSource;
+
+double Window::mx = 0;
+double Window::my = 0;
+
+bool Window::LDown = false;
+bool Window::NormCord = false;
+
+bool Window::Down1 = true;
+bool Window::Down2 = false;
+bool Window::Down3 = false;
 
 // The object currently displaying.
-Object * Window::currentObj; 
+Triangle * Window::currentObj;
 
 glm::mat4 Window::projection; // Projection matrix.
 
@@ -27,6 +41,28 @@ GLuint Window::projectionLoc; // Location of projection in shader.
 GLuint Window::viewLoc; // Location of view in shader.
 GLuint Window::modelLoc; // Location of model in shader.
 GLuint Window::colorLoc; // Location of color in shader.
+
+GLuint Window::lightColLoc;
+GLuint Window::lightPosLoc;
+
+
+GLuint Window::lightAmbi;
+GLuint Window::lightDiff;
+GLuint Window::lightSpec;
+
+GLuint Window::lightConst;
+GLuint Window::lightlin;
+GLuint Window::lightquad;
+
+
+GLuint Window::MatAmbi;
+GLuint Window::MatDiff;
+GLuint Window::Matspec;
+GLuint Window::Matshine;
+
+GLuint Window::NormCordLoc;
+
+
 
 bool Window::initializeProgram() {
 	// Create a shader program with a vertex shader and a fragment shader.
@@ -46,19 +82,72 @@ bool Window::initializeProgram() {
 	viewLoc = glGetUniformLocation(program, "view");
 	modelLoc = glGetUniformLocation(program, "model");
 	colorLoc = glGetUniformLocation(program, "color");
+	
+	lightColLoc = glGetUniformLocation(program, "light.color");
+	lightPosLoc = glGetUniformLocation(program, "light.position");
+	lightConst = glGetUniformLocation(program, "light.constant");
+	lightlin = glGetUniformLocation(program, "light.linear");
+	lightquad = glGetUniformLocation(program, "light.quadratic");
+	lightAmbi = glGetUniformLocation(program, "light.ambient");
+	lightDiff = glGetUniformLocation(program, "light.diffuse");
+	lightSpec = glGetUniformLocation(program, "light.specular");
 
+	MatAmbi = glGetUniformLocation(program, "material.ambient");
+	MatDiff = glGetUniformLocation(program, "material.diffuse");
+	Matspec = glGetUniformLocation(program, "material.specular");
+	Matshine = glGetUniformLocation(program, "material.shininess");
+
+
+	
+	NormCordLoc = glGetUniformLocation(program, "Normcord");
 	return true;
 }
 
 bool Window::initializeObjects()
 {
 	// Create a cube of size 5.
-	cube = new Cube(5.0f);
+	//cube = new Cube(10.0f);
 	// Create a point cloud consisting of cube vertices.
-	cubePoints = new PointCloud("foo", 100);
 
+	Material MBear;
+	MBear.ambient = glm::vec3(3*0.0215f, 3*0.1745f, 3*0.0215f);
+	MBear.diffuse = glm::vec3(0.0f, 0.0f, 0.0f);
+	MBear.specular = glm::vec3(3*0.633f, 3*0.727811f, 3*0.633f);
+	MBear.shininess = 3*0.6f;
+
+	Material MBunny;
+	MBunny.ambient = glm::vec3(3*0.2125f, 3*0.1275f, 3*0.054f);
+	MBunny.diffuse = glm::vec3(3*0.714f, 3*0.4284f, 3*0.18144f);
+	MBunny.specular = glm::vec3(0.0f, 0.0f, 0.0f);
+	MBunny.shininess = 0.0f;
+
+	Material MDragon;
+	MDragon.ambient = glm::vec3(3*0.25f, 3*0.20725f, 3*0.20725f);
+	MDragon.diffuse = glm::vec3(3*1.0f, 3*0.829f, 3*0.829f);
+	MDragon.specular = glm::vec3(3*0.296648f, 3*0.296648f, 3*0.296648f);
+	MDragon.shininess = 3*0.088f;
+
+	Light LightSourceObj;
+	LightSourceObj.color = glm::vec3(2*0.1745f, 2*0.01175f, 2*0.01175f);
+
+	LightSourceObj.ambient = glm::vec3(2*0.1745f, 2*0.01175f, 2*0.01175f);
+	LightSourceObj.diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
+	LightSourceObj.specular = glm::vec3(1.0f, 1.0f, 1.0f);
+
+	LightSourceObj.position = glm::vec3(4.0f, 4.0f, 4.0f);
+	LightSourceObj.constant = 1.0f;
+	LightSourceObj.linear = 0.022f;
+	LightSourceObj.quadratic = 0.0019f;
+
+
+	
+	bear = new Triangle("bear.obj", 1, MBear);
+	bunny = new Triangle("bunny.obj", 1, MBunny);
+	dragon = new Triangle("dragon.obj", 1, MDragon);
+
+	LightSource = new Lighting("sphere.obj", 1, LightSourceObj);
 	// Set cube to be the first to display
-	currentObj = cube;
+	currentObj = bear;
 
 	return true;
 }
@@ -66,8 +155,10 @@ bool Window::initializeObjects()
 void Window::cleanUp()
 {
 	// Deallcoate the objects.
-	delete cube;
-	delete cubePoints;
+	//delete cube;
+	delete bear;
+	delete bunny;
+	delete dragon;
 
 	// Delete the shader program.
 	glDeleteProgram(program);
@@ -161,13 +252,37 @@ void Window::displayCallback(GLFWwindow* window)
 	// Specify the values of the uniform variables we are going to use.
 	glm::mat4 model = currentObj->getModel();
 	glm::vec3 color = currentObj->getColor();
+	Material mat = currentObj->getMaterial();
+	Light light = LightSource->getLight();
 	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 	glUniform3fv(colorLoc, 1, glm::value_ptr(color));
+	glUniform3fv(colorLoc, 1, glm::value_ptr(color));
+	
+	glUniform3fv(lightColLoc, 1, glm::value_ptr(light.color));
+	glUniform3fv(lightPosLoc, 1, glm::value_ptr(light.position));
+
+	glUniform3fv(lightAmbi, 1, glm::value_ptr(light.ambient));
+	glUniform3fv(lightDiff, 1, glm::value_ptr(light.diffuse));
+	glUniform3fv(lightSpec, 1, glm::value_ptr(light.specular));
+
+	glUniform1f(lightConst, light.constant);
+	glUniform1f(lightlin, light.linear);
+	glUniform1f(lightquad, light.quadratic);
+	
+
+	glUniform3fv(MatAmbi, 1, glm::value_ptr(mat.ambient));
+	glUniform3fv(MatDiff, 1, glm::value_ptr(mat.diffuse));
+	glUniform3fv(Matspec, 1, glm::value_ptr(mat.specular));
+	glUniform1f(Matshine, mat.shininess); 
+	glUniform1i(NormCordLoc, NormCord);
+
+	
 
 	// Render the object.
 	currentObj->draw();
+	LightSource->draw();
 
 	// Gets events, including input such as keyboard and mouse or window resizing.
 	glfwPollEvents();
@@ -177,9 +292,6 @@ void Window::displayCallback(GLFWwindow* window)
 
 void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	/*
-	 * TODO: Modify below to add your key callbacks.
-	 */
 	
 	// Check for a key press.
 	if (action == GLFW_PRESS)
@@ -190,16 +302,134 @@ void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, 
 			// Close the window. This causes the program to also terminate.
 			glfwSetWindowShouldClose(window, GL_TRUE);				
 			break;
+		//case GLFW_KEY_1:
+		//	// Set currentObj to bear
+		//	currentObj = cube;
+		//	break;
+		case GLFW_KEY_F1:
+			// Set currentObj to bear
+			currentObj = bear;
+			bear->error();
+			break;
+		case GLFW_KEY_F2:
+			// Set currentObj to bunny
+			currentObj = bunny;
+			bunny->error();
+			break;
+		case GLFW_KEY_F3:
+			// Set currentObj to dragon
+			currentObj = dragon;
+			dragon->error();
+			break;
 		case GLFW_KEY_1:
-			// Set currentObj to cube
-			currentObj = cube;
+			// Set currentObj to dragon
+			Down1 = true;
+			Down2 = false;
+			Down3 = false;
 			break;
 		case GLFW_KEY_2:
-			// Set currentObj to cubePoints
-			currentObj = cubePoints;
+			// Set currentObj to dragon
+			Down1 = false;
+			Down2 = true;
+			Down3 = false;
+			break;
+		case GLFW_KEY_3:
+			// Set currentObj to dragon
+			Down1 = false;
+			Down2 = false;
+			Down3 = true;
+			break;
+		case GLFW_KEY_P:
+			// change size
+			if (mods == GLFW_MOD_SHIFT) {
+				currentObj->updatePointSize(1);
+			}
+			else {
+				currentObj->updatePointSize(-1);
+			}
+			break;
+		case GLFW_KEY_N:
+			// change size
+			if (NormCord == true) {
+				NormCord = false;
+			}
+			else {
+				NormCord = true;
+			}
 			break;
 		default:
 			break;
 		}
 	}
 }
+
+void Window::cursorPos(GLFWwindow* window, double x, double y)
+{
+	if (LDown == true) {
+		glm::vec3 lastPos = trackBallMapping(glm::vec2(mx, my));
+		glm::vec3 curPos = trackBallMapping(glm::vec2(x, y));
+		glm::vec3 dir = curPos - lastPos;
+		float vel = glm::length(dir);
+		if (vel > 0.0001) {
+			glm::vec3 rotAxis = glm::cross(lastPos, curPos);
+			float rot_angle = vel*50;
+			currentObj->Rotating(rot_angle, rotAxis);
+		}
+	}
+	mx = x;
+	my = y;
+}
+
+void Window::mouseClick(GLFWwindow* window, int button, int action, int mods) {
+	if (action == GLFW_PRESS) {
+		switch (button) {
+			case GLFW_MOUSE_BUTTON_LEFT:
+				glfwGetCursorPos(window, &mx, &my);
+				LDown = true;
+				break;
+		}
+	}
+	else if (action == GLFW_RELEASE) {
+		switch (button) {
+			case GLFW_MOUSE_BUTTON_LEFT:
+				LDown = false;
+				break;
+		}
+	}
+	
+}
+
+glm::vec3 Window::trackBallMapping(glm::vec2 point) {
+
+	glm::vec3 v;
+	float d;
+
+	v.x = (2.0f * point.x - width) / width;
+	v.y = (height - 2.0f * point.y) / height;
+	v.z = 0.0f;
+
+	d = glm::length(v);
+
+	d = (d < 1.0f) ? d : 1.0f;
+	v.z = sqrtf(1.001f - d * d);
+
+	v = glm::normalize(v);
+	return v;
+
+}
+
+void Window::scrollwheel(GLFWwindow* window, double x, double y) {
+	//std::cerr << y << std::endl;
+	if (Down1 == true) {
+		currentObj->Scaleing(0.01f, y);
+	}
+	else if (Down2 == true) {
+		LightSource->Scaleing(0.01f, y);
+	}
+	else if (Down2 == true) {
+		currentObj->Scaleing(0.01f, y);
+	}
+}
+
+
+

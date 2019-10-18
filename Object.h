@@ -15,6 +15,7 @@ class Object
 {
 protected:
 	glm::mat4 model;
+	glm::mat4 lightmod;
 	glm::vec3 color;
 public:
 	glm::mat4 getModel() { return model; }
