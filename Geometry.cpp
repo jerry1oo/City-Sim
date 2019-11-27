@@ -1,12 +1,23 @@
-#include "Triangle.h"
+#include "Geometry.h"
 #include<fstream>
 #include<iostream>
 #include<sstream>
 
-Triangle::Triangle(std::string objFilename, GLfloat pointSize, Material M, GLuint modelL)
-	: pointSize(pointSize), material(M), modelLoc(modelL)
+//glm::vec3 Geometry::boundCenter;
+//double Geometry::boundRadius;
+
+GLuint Geometry::modelLoc; // Location of model in shader.
+GLuint Geometry::colorLoc; // Location of color in shader.
+
+GLuint Geometry::MatAmbi;
+GLuint Geometry::MatDiff;
+GLuint Geometry::Matspec;
+GLuint Geometry::Matshine;
+
+Geometry::Geometry(std::string objFilename, GLfloat pointSize, Material M)
+	: pointSize(pointSize), material(M)
 {
-	
+
 	/////File Read In///////
 	std::ifstream objFile(objFilename);
 
@@ -53,9 +64,10 @@ Triangle::Triangle(std::string objFilename, GLfloat pointSize, Material M, GLuin
 			{
 				// Read the later three float numbers and use them as the 
 				// coordinates.
-				
-				glm::ivec3 triangle;
-				glm::ivec3 temp;
+
+				glm::ivec3 V;
+				glm::ivec3 VT;
+				glm::ivec3 VN;
 				char temp1 = 0;
 				char temp2 = 0;
 				char temp3 = 0;
@@ -64,17 +76,36 @@ Triangle::Triangle(std::string objFilename, GLfloat pointSize, Material M, GLuin
 				char temp6 = 0;
 				char temp7 = 0;
 				char temp8 = 0;
+				char temp9 = 0;
+				char temp10 = 0;
+				char temp11 = 0;
+				char temp12 = 0;
 				
-				ss >> triangle.x >> temp1 >> temp2 >>  temp.x >> triangle.y >> temp4 >> temp5 >> temp.y >> triangle.z >> temp6 >> temp7 >> temp.z;
+				ss >> V.x >> temp1 >> VT.x >> temp3 >> VN.x >> V.y >> temp5 >> VT.y >> temp7 >> VN.y >> V.z >> temp9 >> VT.z >> temp11 >> VN.z;
 				glm::ivec3 tempi = { 1, 1, 1 };
-				triangle = triangle - tempi;
+				V = V - tempi;
+				VN = VN - tempi;
+				VT = VT - tempi;
 				// Process the point. For example, you can save it to a.
-				triangles.push_back(triangle);
+				indicesV.push_back(V);
+				indicesN.push_back(VN);
+				indicesT.push_back(VT);
+
 			}
 		}
+		for (unsigned i = 0; i < indicesV.size(); i++) {
+			vertices_.push_back(points[indicesV[i].x]);
+			vertices_.push_back(points[indicesV[i].y]);
+			vertices_.push_back(points[indicesV[i].z]);
+			normals_.push_back(normals[indicesN[i].x]);
+			normals_.push_back(normals[indicesN[i].y]);
+			normals_.push_back(normals[indicesN[i].z]);			
+			indices_.push_back(3*i);
+			indices_.push_back(3*i+1);
+			indices_.push_back(3*i+2);
+		}
 	}
-	else
-	{
+	else{
 		std::cerr << "Can't open the file " << objFilename << std::endl;
 	}
 
@@ -131,10 +162,10 @@ Triangle::Triangle(std::string objFilename, GLfloat pointSize, Material M, GLuin
 	}*/
 	///////////Scaleing points/////////////
 
-	
-	
 
-	
+
+
+
 
 
 
@@ -142,8 +173,8 @@ Triangle::Triangle(std::string objFilename, GLfloat pointSize, Material M, GLuin
 	// Set the model matrix to an identity matrix. 
 	model = glm::mat4(1);
 	//model = glm::translate(c);
-	model = glm::scale(glm::vec3(scale));
-	
+	//model = glm::scale(glm::vec3(scale));
+
 	// Set the color. 
 	color = glm::vec3(1, 0, 0);
 
@@ -159,8 +190,8 @@ Triangle::Triangle(std::string objFilename, GLfloat pointSize, Material M, GLuin
 	// Bind to the first VBO. We will use it to store the points.
 	glBindBuffer(GL_ARRAY_BUFFER, vboV);
 	// Pass in the data.
-	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * points.size(),
-		points.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * vertices_.size(),
+		vertices_.data(), GL_STATIC_DRAW);
 	// Enable vertex attribute 0. 
 	// We will be able to access points through it.
 	glEnableVertexAttribArray(0);
@@ -169,16 +200,16 @@ Triangle::Triangle(std::string objFilename, GLfloat pointSize, Material M, GLuin
 	// Bind to the second VBO. We will use it to store the indices.
 	glBindBuffer(GL_ARRAY_BUFFER, vboN);
 	// Pass in the data.
-	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * normals.size(),
-		normals.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * normals_.size(),
+		normals_.data(), GL_STATIC_DRAW);
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
 
 	// Bind to the first EBO. We will use it to store the faces.
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 	// Pass in the data.
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(glm::ivec3) * triangles.size(),
-		triangles.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices_.size(),
+		indices_.data(), GL_STATIC_DRAW);
 
 	// Unbind from the VBO.
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -186,7 +217,7 @@ Triangle::Triangle(std::string objFilename, GLfloat pointSize, Material M, GLuin
 	glBindVertexArray(0);
 }
 
-Triangle::~Triangle()
+Geometry::~Geometry()
 {
 	// Delete the VBO and the VAO.
 	glDeleteBuffers(1, &vboV);
@@ -195,26 +226,45 @@ Triangle::~Triangle()
 	glDeleteVertexArrays(1, &vao);
 }
 
-void Triangle::draw()
+void Geometry::draw(GLuint shaderProgram, glm::mat4 C, bool bound, bool Frustum, std::vector<plane> P, int &count)
 {
+	model = C;
+
+	modelLoc = glGetUniformLocation(shaderProgram, "model");
+	colorLoc = glGetUniformLocation(shaderProgram, "color");
+
+	MatAmbi = glGetUniformLocation(shaderProgram, "material.ambient");
+	MatDiff = glGetUniformLocation(shaderProgram, "material.diffuse");
+	Matspec = glGetUniformLocation(shaderProgram, "material.specular");
+	Matshine = glGetUniformLocation(shaderProgram, "material.shininess");
+	
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+	glUniform3fv(colorLoc, 1, glm::value_ptr(color));
+
+
+	glUniform3fv(MatAmbi, 1, glm::value_ptr(material.ambient));
+	glUniform3fv(MatDiff, 1, glm::value_ptr(material.diffuse));
+	glUniform3fv(Matspec, 1, glm::value_ptr(material.specular));
+	glUniform1f(Matshine, material.shininess);
+
+
+
 	// Bind to the VAO.
 	glBindVertexArray(vao);
 	// Set point size.
 	glPointSize(pointSize);
 	// Draw points 
-	glDrawElements(GL_TRIANGLES, triangles.size() * 3 , GL_UNSIGNED_INT, 0);;
+	glDrawElements(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_INT, 0);;
 	// Unbind from the VAO.
 	glBindVertexArray(0);
 }
 
-void Triangle::update()
+void Geometry::update(glm::mat4 C)
 {
-	// Spin the cube by 1 degree.
-	//spin(0.1f);
+	
 }
 
-void Triangle::updatePointSize(GLfloat size)
+void Geometry::updatePointSize(GLfloat size)
 {
 	if (size == 1) {
 		pointSize++;
@@ -224,7 +274,7 @@ void Triangle::updatePointSize(GLfloat size)
 	}
 }
 
-void Triangle::Rotating(float deg, glm::vec3 rotAxis)
+void Geometry::Rotating(float deg, glm::vec3 rotAxis)
 {
 	// Update the model matrix by multiplying a rotation matrix
 	glm::mat4 tempM = model;
@@ -233,16 +283,18 @@ void Triangle::Rotating(float deg, glm::vec3 rotAxis)
 	model = model * tempM;
 }
 
-void Triangle::error()
+void Geometry::error()
 {
-	for (int i = 0; i < 10; i++) {
-		//std::cerr << triangles[i].x << " " << triangles[i].y << " " << triangles[i].z << std::endl;
-		//std::cerr << triangles.size() << std::endl;
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; i++) {
+			std::cerr << model[j][i] << " ";
+		}	
+		std::cerr << std::endl;
 	}
 	std::cerr << std::endl;
 }
 
-void Triangle::Scaleing(float scaler, double y)
+void Geometry::Scaleing(float scaler, double y)
 {
 	// Update the model matrix by multiplying a scaling matrix
 	scale = 1;
@@ -252,4 +304,3 @@ void Triangle::Scaleing(float scaler, double y)
 	model = glm::scale(glm::vec3(scale));
 	model = model * tempM;
 }
-

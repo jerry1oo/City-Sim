@@ -1,12 +1,25 @@
-#include "Triangle.h"
+#include "BoundSphere.h"
 #include<fstream>
 #include<iostream>
 #include<sstream>
 
-Triangle::Triangle(std::string objFilename, GLfloat pointSize, Material M, GLuint modelL)
-	: pointSize(pointSize), material(M), modelLoc(modelL)
+
+GLuint BoundSphere::modelLoc; // Location of model in shader.
+GLuint BoundSphere::colorLoc; // Location of color in shader.
+GLuint BoundSphere::cubemapTexture;
+
+GLuint BoundSphere::MatAmbi;
+GLuint BoundSphere::MatDiff;
+GLuint BoundSphere::Matspec;
+GLuint BoundSphere::Matshine;
+
+glm::vec3 BoundSphere::boundCenter;
+double BoundSphere::boundRadius;
+
+BoundSphere::BoundSphere(std::string objFilename, GLfloat pointSize, GLuint tex)
+	: pointSize(pointSize)
 {
-	
+	cubemapTexture = tex;
 	/////File Read In///////
 	std::ifstream objFile(objFilename);
 
@@ -53,7 +66,7 @@ Triangle::Triangle(std::string objFilename, GLfloat pointSize, Material M, GLuin
 			{
 				// Read the later three float numbers and use them as the 
 				// coordinates.
-				
+
 				glm::ivec3 triangle;
 				glm::ivec3 temp;
 				char temp1 = 0;
@@ -64,17 +77,18 @@ Triangle::Triangle(std::string objFilename, GLfloat pointSize, Material M, GLuin
 				char temp6 = 0;
 				char temp7 = 0;
 				char temp8 = 0;
-				
-				ss >> triangle.x >> temp1 >> temp2 >>  temp.x >> triangle.y >> temp4 >> temp5 >> temp.y >> triangle.z >> temp6 >> temp7 >> temp.z;
+
+				ss >> triangle.x >> temp1 >> temp2 >> temp.x >> triangle.y >> temp4 >> temp5 >> temp.y >> triangle.z >> temp6 >> temp7 >> temp.z;
 				glm::ivec3 tempi = { 1, 1, 1 };
 				triangle = triangle - tempi;
 				// Process the point. For example, you can save it to a.
-				triangles.push_back(triangle);
+				indicesV.push_back(triangle);
+
 			}
 		}
+		
 	}
-	else
-	{
+	else{
 		std::cerr << "Can't open the file " << objFilename << std::endl;
 	}
 
@@ -108,7 +122,7 @@ Triangle::Triangle(std::string objFilename, GLfloat pointSize, Material M, GLuin
 	}
 	///////////Centering points////////////
 
-
+	
 
 	///////////Scaleing points/////////////
 	scale = 1;
@@ -131,10 +145,10 @@ Triangle::Triangle(std::string objFilename, GLfloat pointSize, Material M, GLuin
 	}*/
 	///////////Scaleing points/////////////
 
-	
-	
 
-	
+
+
+
 
 
 
@@ -142,8 +156,8 @@ Triangle::Triangle(std::string objFilename, GLfloat pointSize, Material M, GLuin
 	// Set the model matrix to an identity matrix. 
 	model = glm::mat4(1);
 	//model = glm::translate(c);
-	model = glm::scale(glm::vec3(scale));
-	
+	//model = glm::scale(glm::vec3(scale));
+
 	// Set the color. 
 	color = glm::vec3(1, 0, 0);
 
@@ -177,8 +191,8 @@ Triangle::Triangle(std::string objFilename, GLfloat pointSize, Material M, GLuin
 	// Bind to the first EBO. We will use it to store the faces.
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 	// Pass in the data.
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(glm::ivec3) * triangles.size(),
-		triangles.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(glm::ivec3) * indicesV.size(),
+		indicesV.data(), GL_STATIC_DRAW);
 
 	// Unbind from the VBO.
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -186,7 +200,7 @@ Triangle::Triangle(std::string objFilename, GLfloat pointSize, Material M, GLuin
 	glBindVertexArray(0);
 }
 
-Triangle::~Triangle()
+BoundSphere::~BoundSphere()
 {
 	// Delete the VBO and the VAO.
 	glDeleteBuffers(1, &vboV);
@@ -195,26 +209,46 @@ Triangle::~Triangle()
 	glDeleteVertexArrays(1, &vao);
 }
 
-void Triangle::draw()
+void BoundSphere::draw(GLuint shaderProgram, glm::mat4 C, bool bound, bool Frustum,std::vector<plane> P, int &count)
 {
+	model = C;
+
+	modelLoc = glGetUniformLocation(shaderProgram, "model");
+	//colorLoc = glGetUniformLocation(shaderProgram, "color");
+
+	//MatAmbi = glGetUniformLocation(shaderProgram, "material.ambient");
+	//MatDiff = glGetUniformLocation(shaderProgram, "material.diffuse");
+	//Matspec = glGetUniformLocation(shaderProgram, "material.specular");
+	//Matshine = glGetUniformLocation(shaderProgram, "material.shininess");
+	
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+	//glUniform3fv(colorLoc, 1, glm::value_ptr(color));
+
+
+	//glUniform3fv(MatAmbi, 1, glm::value_ptr(material.ambient));
+	//glUniform3fv(MatDiff, 1, glm::value_ptr(material.diffuse));
+	//glUniform3fv(Matspec, 1, glm::value_ptr(material.specular));
+	//glUniform1f(Matshine, material.shininess);
+
+
+
 	// Bind to the VAO.
 	glBindVertexArray(vao);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
 	// Set point size.
 	glPointSize(pointSize);
 	// Draw points 
-	glDrawElements(GL_TRIANGLES, triangles.size() * 3 , GL_UNSIGNED_INT, 0);;
+	glDrawElements(GL_TRIANGLES, indicesV.size() * 3, GL_UNSIGNED_INT, 0);;
 	// Unbind from the VAO.
 	glBindVertexArray(0);
 }
 
-void Triangle::update()
+void BoundSphere::update(glm::mat4 C)
 {
-	// Spin the cube by 1 degree.
-	//spin(0.1f);
+	
 }
 
-void Triangle::updatePointSize(GLfloat size)
+void BoundSphere::updatePointSize(GLfloat size)
 {
 	if (size == 1) {
 		pointSize++;
@@ -224,7 +258,7 @@ void Triangle::updatePointSize(GLfloat size)
 	}
 }
 
-void Triangle::Rotating(float deg, glm::vec3 rotAxis)
+void BoundSphere::Rotating(float deg, glm::vec3 rotAxis)
 {
 	// Update the model matrix by multiplying a rotation matrix
 	glm::mat4 tempM = model;
@@ -233,16 +267,18 @@ void Triangle::Rotating(float deg, glm::vec3 rotAxis)
 	model = model * tempM;
 }
 
-void Triangle::error()
+void BoundSphere::error()
 {
-	for (int i = 0; i < 10; i++) {
-		//std::cerr << triangles[i].x << " " << triangles[i].y << " " << triangles[i].z << std::endl;
-		//std::cerr << triangles.size() << std::endl;
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; i++) {
+			std::cerr << model[j][i] << " ";
+		}	
+		std::cerr << std::endl;
 	}
 	std::cerr << std::endl;
 }
 
-void Triangle::Scaleing(float scaler, double y)
+void BoundSphere::Scaleing(float scaler, double y)
 {
 	// Update the model matrix by multiplying a scaling matrix
 	scale = 1;
@@ -252,4 +288,3 @@ void Triangle::Scaleing(float scaler, double y)
 	model = glm::scale(glm::vec3(scale));
 	model = model * tempM;
 }
-

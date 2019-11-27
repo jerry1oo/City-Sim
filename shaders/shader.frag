@@ -67,6 +67,8 @@ void main()
         fragColor = vec4(result, sampleExtraOutput);
     }
     else{
-        fragColor = vec4(color, sampleExtraOutput);
+        vec3 temp = normalize(normalOut);
+        temp = vec3((normalOut.x+1.0)/2.0, (normalOut.y+1.0)/2.0,(normalOut.z+1.0)/2.0);
+        fragColor = vec4(temp, sampleExtraOutput);
     }
 }

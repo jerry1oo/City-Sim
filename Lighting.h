@@ -7,12 +7,16 @@
 #include <GL/glew.h>
 #endif
 
+
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/transform.hpp>
 #include <vector>
 #include <string>
 
+
 #include "Object.h"
+//#include "Window.h"
 
 
 struct Light {
@@ -38,10 +42,11 @@ private:
 	GLuint vao, vboV, vboN, ebo;
 	GLfloat pointSize;
 	GLfloat scale;
-	//Material material;
+	Material material;
 	Light light;
+	GLuint modelLoc;
 public:
-	Lighting(std::string objFilename, GLfloat pointSize, Light L);
+	Lighting(std::string objFilename, GLfloat pointSize, Material M, Light L, GLuint modelL);
 	~Lighting();
 
 	void draw();
@@ -52,7 +57,8 @@ public:
 
 	void error();
 	void Scaleing(float scaler, double y);
-	Light getLight() { return light; }
+	Light getLight() { return light; };
+	Material getMaterial() { return material; };
 };
 
 #endif

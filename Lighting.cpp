@@ -3,10 +3,10 @@
 #include<iostream>
 #include<sstream>
 
-Lighting::Lighting(std::string objFilename, GLfloat pointSize, Light L)
-	: pointSize(pointSize), light(L)
+Lighting::Lighting(std::string objFilename, GLfloat pointSize, Material M, Light L, GLuint modelL)
+	: pointSize(pointSize), light(L), modelLoc(modelL), material(M)
 {
-
+	
 	/////File Read In///////
 	std::ifstream objFile(objFilename);
 
@@ -108,6 +108,7 @@ Lighting::Lighting(std::string objFilename, GLfloat pointSize, Light L)
 	}
 	///////////Centering points////////////
 
+	
 
 
 	///////////Scaleing points/////////////
@@ -139,9 +140,11 @@ Lighting::Lighting(std::string objFilename, GLfloat pointSize, Light L)
 
 
 
-	// Set the model matrix to an identity matrix. 
+	// Set the model matrix to an identity matrix.
 	model = glm::mat4(1);
+	model = glm::translate(light.position);
 	model = glm::scale(glm::vec3(scale));
+	
 	// Set the color. 
 	color = glm::vec3(1, 0, 0);
 
@@ -195,6 +198,7 @@ Lighting::~Lighting()
 
 void Lighting::draw()
 {
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 	// Bind to the VAO.
 	glBindVertexArray(vao);
 	// Set point size.
@@ -227,7 +231,9 @@ void Lighting::Rotating(float deg, glm::vec3 rotAxis)
 	glm::mat4 tempM = model;
 	model = glm::mat4(1);
 	model = glm::rotate(glm::radians(deg), rotAxis);
+	light.position = model * glm::vec4(light.position,1);
 	model = model * tempM;
+
 }
 
 void Lighting::error()
@@ -239,13 +245,16 @@ void Lighting::error()
 	std::cerr << std::endl;
 }
 
-void Lighting::Scaleing(float scaler, double y)
+void Lighting::Scaleing(float trans, double y)
 {
-	// Update the model matrix by multiplying a scaling matrix
-	scale = 1;
-	scale += (scaler*y)*scale;
+	// Update the model matrix by multiplying a transformation matrix
 	glm::mat4 tempM = model;
 	model = glm::mat4(1);
-	model = glm::scale(glm::vec3(scale));
-	model = model * tempM;
+	glm::vec3 temp = glm::vec3((light.position.x*trans)*y, (light.position.y*trans)*y, (light.position.z*trans)*y);
+	model = glm::translate(glm::vec3(temp));
+	light.position = model * glm::vec4(light.position, 1);
+	model = model * tempM; 
+
+	
+	
 }

@@ -8,18 +8,14 @@
 #endif
 
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/transform.hpp>
 #include <vector>
 #include <string>
 
 #include "Object.h"
+//#include "Window.h"
 
-struct Material {
-	glm::vec3 ambient;
-	glm::vec3 diffuse;
-	glm::vec3 specular;
-	float shininess;
-};
 
 
 
@@ -33,9 +29,10 @@ private:
 	GLfloat pointSize;
 	GLfloat scale;
 	Material material;
+	GLuint modelLoc;
 	
 public:
-	Triangle(std::string objFilename, GLfloat pointSize, Material M);
+	Triangle(std::string objFilename, GLfloat pointSize, Material M, GLuint modelL);
 	~Triangle();
 
 	void draw();
