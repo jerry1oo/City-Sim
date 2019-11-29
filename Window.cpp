@@ -6,7 +6,7 @@ int Window::height;
 const char* Window::windowTitle = "GLFW Starter Project";
 
 // Objects to display.
-//Cube * Window::cube;
+
 Triangle * Window::bear;
 Triangle * Window::bunny;
 Triangle * Window::dragon;
@@ -16,150 +16,7 @@ Bezier * Window::curve;
 Track * Window::track;
 int Window::movement = 0;
 
-
-Geometry * Window::R_head;
-Geometry * Window::R_body;
-Geometry * Window::R_eye;
-Geometry * Window::R_ant;
-Geometry * Window::R_arm;
-BoundSphere * Window::R_bound;
-Transform * Window::bound;
-
-Transform * Window::Army;
-
-
-Transform * Window::Armyrow1;
-Transform * Window::Armyrow1col1;
-Transform * Window::Armyrow1col2;
-Transform * Window::Armyrow1col3;
-Transform * Window::Armyrow1col4;
-Transform * Window::Armyrow1col5;
-Transform * Window::Armyrow1col6;
-Transform * Window::Armyrow1col7;
-Transform * Window::Armyrow1col8;
-Transform * Window::Armyrow1col9;
-Transform * Window::Armyrow1col10;
-
-Transform * Window::Armyrow2;
-Transform * Window::Armyrow2col1;
-Transform * Window::Armyrow2col2;
-Transform * Window::Armyrow2col3;
-Transform * Window::Armyrow2col4;
-Transform * Window::Armyrow2col5;
-Transform * Window::Armyrow2col6;
-Transform * Window::Armyrow2col7;
-Transform * Window::Armyrow2col8;
-Transform * Window::Armyrow2col9;
-Transform * Window::Armyrow2col10;
-
-Transform * Window::Armyrow3;
-Transform * Window::Armyrow3col1;
-Transform * Window::Armyrow3col2;
-Transform * Window::Armyrow3col3;
-Transform * Window::Armyrow3col4;
-Transform * Window::Armyrow3col5;
-Transform * Window::Armyrow3col6;
-Transform * Window::Armyrow3col7;
-Transform * Window::Armyrow3col8;
-Transform * Window::Armyrow3col9;
-Transform * Window::Armyrow3col10;
-
-Transform * Window::Armyrow4;
-Transform * Window::Armyrow4col1;
-Transform * Window::Armyrow4col2;
-Transform * Window::Armyrow4col3;
-Transform * Window::Armyrow4col4;
-Transform * Window::Armyrow4col5;
-Transform * Window::Armyrow4col6;
-Transform * Window::Armyrow4col7;
-Transform * Window::Armyrow4col8;
-Transform * Window::Armyrow4col9;
-Transform * Window::Armyrow4col10;
-
-Transform * Window::Armyrow5;
-Transform * Window::Armyrow5col1;
-Transform * Window::Armyrow5col2;
-Transform * Window::Armyrow5col3;
-Transform * Window::Armyrow5col4;
-Transform * Window::Armyrow5col5;
-Transform * Window::Armyrow5col6;
-Transform * Window::Armyrow5col7;
-Transform * Window::Armyrow5col8;
-Transform * Window::Armyrow5col9;
-Transform * Window::Armyrow5col10;
-
-Transform * Window::Armyrow6;
-Transform * Window::Armyrow6col1;
-Transform * Window::Armyrow6col2;
-Transform * Window::Armyrow6col3;
-Transform * Window::Armyrow6col4;
-Transform * Window::Armyrow6col5;
-Transform * Window::Armyrow6col6;
-Transform * Window::Armyrow6col7;
-Transform * Window::Armyrow6col8;
-Transform * Window::Armyrow6col9;
-Transform * Window::Armyrow6col10;
-
-Transform * Window::Armyrow7;
-Transform * Window::Armyrow7col1;
-Transform * Window::Armyrow7col2;
-Transform * Window::Armyrow7col3;
-Transform * Window::Armyrow7col4;
-Transform * Window::Armyrow7col5;
-Transform * Window::Armyrow7col6;
-Transform * Window::Armyrow7col7;
-Transform * Window::Armyrow7col8;
-Transform * Window::Armyrow7col9;
-Transform * Window::Armyrow7col10;
-
-Transform * Window::Armyrow8;
-Transform * Window::Armyrow8col1;
-Transform * Window::Armyrow8col2;
-Transform * Window::Armyrow8col3;
-Transform * Window::Armyrow8col4;
-Transform * Window::Armyrow8col5;
-Transform * Window::Armyrow8col6;
-Transform * Window::Armyrow8col7;
-Transform * Window::Armyrow8col8;
-Transform * Window::Armyrow8col9;
-Transform * Window::Armyrow8col10;
-
-Transform * Window::Armyrow9;
-Transform * Window::Armyrow9col1;
-Transform * Window::Armyrow9col2;
-Transform * Window::Armyrow9col3;
-Transform * Window::Armyrow9col4;
-Transform * Window::Armyrow9col5;
-Transform * Window::Armyrow9col6;
-Transform * Window::Armyrow9col7;
-Transform * Window::Armyrow9col8;
-Transform * Window::Armyrow9col9;
-Transform * Window::Armyrow9col10;
-
-Transform * Window::Armyrow10;
-Transform * Window::Armyrow10col1;
-Transform * Window::Armyrow10col2;
-Transform * Window::Armyrow10col3;
-Transform * Window::Armyrow10col4;
-Transform * Window::Armyrow10col5;
-Transform * Window::Armyrow10col6;
-Transform * Window::Armyrow10col7;
-Transform * Window::Armyrow10col8;
-Transform * Window::Armyrow10col9;
-Transform * Window::Armyrow10col10;
-
-Transform * Window::Satellite;
-Transform * Window::Head;
-Transform * Window::Body;
-Transform * Window::LeftAnt;
-Transform * Window::RightAnt;
-Transform * Window::LeftEye;
-Transform * Window::RightEye;
-Transform * Window::RightArm;
-Transform * Window::LeftArm;
-Transform * Window::RightLeg;
-Transform * Window::LeftLeg;
-
+Road * Window::road;
 
 Lighting * Window::LightSource;
 
@@ -214,6 +71,10 @@ GLuint Window::program; // The shader program id.
 GLuint Window::program1;
 GLuint Window::program2;
 GLuint Window::Beziershader;
+GLuint Window::RoadShader;
+
+GLuint Window::projectionLocRoad;
+GLuint Window::viewLocRoad;
 
 GLuint Window::projectionLoc1; // Location of projection in shader.
 GLuint Window::projectionLoc2; // Location of projection in shader.
@@ -256,6 +117,7 @@ bool Window::initializeProgram() {
 	program1 = LoadShaders("shaders/Skybox.vert", "shaders/Skybox.frag");
 	program2 = LoadShaders("shaders/car.vert", "shaders/car.frag");
 	Beziershader = LoadShaders("shaders/Bezier.vert", "shaders/Bezier.frag");
+	RoadShader = LoadShaders("shaders/Road.vert", "shaders/Road.frag");
 
 	// Check the shader program.
 	if (!program)
@@ -270,6 +132,10 @@ bool Window::initializeProgram() {
 	}
 
 	// Activate the shader program.
+
+	glUseProgram(RoadShader);
+	projectionLocRoad = glGetUniformLocation(program2, "projection");
+	viewLocRoad = glGetUniformLocation(program2, "view");
 
 	glUseProgram(program2);
 	projectionLoc2 = glGetUniformLocation(program2, "projection");
@@ -318,29 +184,11 @@ bool Window::initializeObjects()
 {
 	// Create a cube of size 5.
 	skybox = new SkyBox(400.0f);
+	road = new Road(glm::vec3(-0.5f, -1.0f, 0.10f), glm::vec3(0.5f, -1.0f, 0.10f), glm::vec3(-0.5f, -1.0f, -0.10f), glm::vec3(0.5f, -1.0f, -0.10f));
 	car = new BoundSphere("sphere.obj", 1,skybox->getTex());
 	curve = new Bezier(glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(3.0f, -1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 1.0f), glm::vec3(-1.0f, 0.0f, 1.0f));
 	track = new Track();
 	// Create a point cloud consisting of cube vertices.
-
-	/*Material MBear;
-	MBear.ambient = glm::vec3(1*0.0215f, 1*0.1745f, 1*0.0215f);
-	MBear.diffuse = glm::vec3(0.0f, 0.0f, 0.0f);
-	MBear.specular = glm::vec3(6*0.633f, 6*0.727811f, 6*0.633f);
-	MBear.shininess = 6*0.6f;
-
-	Material MBunny;
-	MBunny.ambient = glm::vec3(1*0.2125f, 1*0.1275f, 1*0.054f);
-	MBunny.diffuse = glm::vec3(2*0.714f, 2*0.4284f, 2*0.18144f);
-	MBunny.specular = glm::vec3(0.0f, 0.0f, 0.0f);
-	MBunny.shininess = 0.0f;
-
-	Material MDragon;
-	MDragon.ambient = glm::vec3(1*0.25f, 1*0.20725f, 1*0.20725f);
-	MDragon.diffuse = glm::vec3(1*1.0f, 1*0.829f, 1*0.829f);
-	MDragon.specular = glm::vec3(1*0.296648f, 1*0.296648f, 1*0.296648f);
-	MDragon.shininess = 1*0.088f;*/
-
 
 	Light LightSourceObj;
 	LightSourceObj.color = glm::vec3(3*0.1745f, 3*0.01175f, 3*0.01175f);
@@ -370,416 +218,10 @@ bool Window::initializeObjects()
 	Meye.specular = glm::vec3(0 * 0.332741f, 0 * 0.328634f, 0 * 0.346435f);
 	Meye.shininess = 0 * 0.3f;
 
-	Army = new Transform(glm::mat4(1));
-
-	double tx = 5.9;
-	double ty = 5.9;
-
-	Armyrow1 = new Transform(glm::mat4(1));
-	Armyrow1col1 = new Transform(glm::translate(glm::mat4(1), glm::vec3(tx, 0, 0)));
-	Armyrow1col2 = new Transform(glm::translate(glm::mat4(1), glm::vec3(2*tx, 0, 0)));
-	Armyrow1col3 = new Transform(glm::translate(glm::mat4(1), glm::vec3(3*tx, 0, 0)));
-	Armyrow1col4 = new Transform(glm::translate(glm::mat4(1), glm::vec3(4*tx, 0, 0)));
-	Armyrow1col5 = new Transform(glm::translate(glm::mat4(1), glm::vec3(5*tx, 0, 0)));
-	Armyrow1col6 = new Transform(glm::translate(glm::mat4(1), glm::vec3(0, 0, 0)));
-	Armyrow1col7 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-1*tx, 0, 0)));
-	Armyrow1col8 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-2*tx, 0, 0)));
-	Armyrow1col9 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-3*tx, 0, 0)));
-	Armyrow1col10 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-4*tx, 0, 0)));
-
-	Armyrow2 = new Transform(glm::mat4(1));
-	Armyrow2col1 = new Transform(glm::translate(glm::mat4(1), glm::vec3(tx, 0, ty)));
-	Armyrow2col2 = new Transform(glm::translate(glm::mat4(1), glm::vec3(2 * tx, 0, ty)));
-	Armyrow2col3 = new Transform(glm::translate(glm::mat4(1), glm::vec3(3 * tx, 0, ty)));
-	Armyrow2col4 = new Transform(glm::translate(glm::mat4(1), glm::vec3(4 * tx, 0, ty)));
-	Armyrow2col5 = new Transform(glm::translate(glm::mat4(1), glm::vec3(5 * tx, 0, ty)));
-	Armyrow2col6 = new Transform(glm::translate(glm::mat4(1), glm::vec3(0, 0, ty)));
-	Armyrow2col7 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-1 * tx, 0, ty)));
-	Armyrow2col8 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-2 * tx, 0, ty)));
-	Armyrow2col9 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-3 * tx, 0, ty)));
-	Armyrow2col10 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-4 * tx, 0, ty)));
-
-	Armyrow3 = new Transform(glm::mat4(1));
-	Armyrow3col1 = new Transform(glm::translate(glm::mat4(1), glm::vec3(tx, 0, 2*ty)));
-	Armyrow3col2 = new Transform(glm::translate(glm::mat4(1), glm::vec3(2 * tx, 0, 2*ty)));
-	Armyrow3col3 = new Transform(glm::translate(glm::mat4(1), glm::vec3(3 * tx, 0, 2*ty)));
-	Armyrow3col4 = new Transform(glm::translate(glm::mat4(1), glm::vec3(4 * tx, 0, 2*ty)));
-	Armyrow3col5 = new Transform(glm::translate(glm::mat4(1), glm::vec3(5 * tx, 0, 2*ty)));
-	Armyrow3col6 = new Transform(glm::translate(glm::mat4(1), glm::vec3(0, 0, 2*ty)));
-	Armyrow3col7 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-1 * tx, 0, 2*ty)));
-	Armyrow3col8 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-2 * tx, 0, 2*ty)));
-	Armyrow3col9 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-3 * tx, 0, 2*ty)));
-	Armyrow3col10 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-4 * tx, 0, 2*ty)));
-
-	Armyrow4 = new Transform(glm::mat4(1));
-	Armyrow4col1 = new Transform(glm::translate(glm::mat4(1), glm::vec3(tx, 0, 3 * ty)));
-	Armyrow4col2 = new Transform(glm::translate(glm::mat4(1), glm::vec3(2 * tx, 0, 3 * ty)));
-	Armyrow4col3 = new Transform(glm::translate(glm::mat4(1), glm::vec3(3 * tx, 0, 3 * ty)));
-	Armyrow4col4 = new Transform(glm::translate(glm::mat4(1), glm::vec3(4 * tx, 0, 3 * ty)));
-	Armyrow4col5 = new Transform(glm::translate(glm::mat4(1), glm::vec3(5 * tx, 0, 3 * ty)));
-	Armyrow4col6 = new Transform(glm::translate(glm::mat4(1), glm::vec3(0, 0, 3 * ty)));
-	Armyrow4col7 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-1 * tx, 0, 3 * ty)));
-	Armyrow4col8 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-2 * tx, 0, 3 * ty)));
-	Armyrow4col9 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-3 * tx, 0, 3 * ty)));
-	Armyrow4col10 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-4 * tx, 0, 3 * ty)));
-
-	Armyrow5 = new Transform(glm::mat4(1));
-	Armyrow5col1 = new Transform(glm::translate(glm::mat4(1), glm::vec3(tx, 0, 4 * ty)));
-	Armyrow5col2 = new Transform(glm::translate(glm::mat4(1), glm::vec3(2 * tx, 0, 4 * ty)));
-	Armyrow5col3 = new Transform(glm::translate(glm::mat4(1), glm::vec3(3 * tx, 0, 4 * ty)));
-	Armyrow5col4 = new Transform(glm::translate(glm::mat4(1), glm::vec3(4 * tx, 0, 4 * ty)));
-	Armyrow5col5 = new Transform(glm::translate(glm::mat4(1), glm::vec3(5 * tx, 0, 4 * ty)));
-	Armyrow5col6 = new Transform(glm::translate(glm::mat4(1), glm::vec3(0, 0, 4 * ty)));
-	Armyrow5col7 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-1 * tx, 0, 4 * ty)));
-	Armyrow5col8 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-2 * tx, 0, 4 * ty)));
-	Armyrow5col9 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-3 * tx, 0, 4 * ty)));
-	Armyrow5col10 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-4 * tx, 0, 4 * ty)));
-
-	Armyrow6 = new Transform(glm::mat4(1));
-	Armyrow6col1 = new Transform(glm::translate(glm::mat4(1), glm::vec3(tx, 0, 5 * ty)));
-	Armyrow6col2 = new Transform(glm::translate(glm::mat4(1), glm::vec3(2 * tx, 0, 5 * ty)));
-	Armyrow6col3 = new Transform(glm::translate(glm::mat4(1), glm::vec3(3 * tx, 0, 5 * ty)));
-	Armyrow6col4 = new Transform(glm::translate(glm::mat4(1), glm::vec3(4 * tx, 0, 5 * ty)));
-	Armyrow6col5 = new Transform(glm::translate(glm::mat4(1), glm::vec3(5 * tx, 0, 5 * ty)));
-	Armyrow6col6 = new Transform(glm::translate(glm::mat4(1), glm::vec3(0, 0, 5 * ty)));
-	Armyrow6col7 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-1 * tx, 0, 5 * ty)));
-	Armyrow6col8 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-2 * tx, 0, 5 * ty)));
-	Armyrow6col9 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-3 * tx, 0, 5 * ty)));
-	Armyrow6col10 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-4 * tx, 0, 5 * ty)));
-
-	Armyrow7 = new Transform(glm::mat4(1));
-	Armyrow7col1 = new Transform(glm::translate(glm::mat4(1), glm::vec3(tx, 0, -1 * ty)));
-	Armyrow7col2 = new Transform(glm::translate(glm::mat4(1), glm::vec3(2 * tx, 0, -1 * ty)));
-	Armyrow7col3 = new Transform(glm::translate(glm::mat4(1), glm::vec3(3 * tx, 0, -1 * ty)));
-	Armyrow7col4 = new Transform(glm::translate(glm::mat4(1), glm::vec3(4 * tx, 0, -1 * ty)));
-	Armyrow7col5 = new Transform(glm::translate(glm::mat4(1), glm::vec3(5 * tx, 0, -1 * ty)));
-	Armyrow7col6 = new Transform(glm::translate(glm::mat4(1), glm::vec3(0, 0, -1 * ty)));
-	Armyrow7col7 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-1 * tx, 0, -1 * ty)));
-	Armyrow7col8 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-2 * tx, 0, -1 * ty)));
-	Armyrow7col9 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-3 * tx, 0, -1 * ty)));
-	Armyrow7col10 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-4 * tx, 0, -1 * ty)));
-
-	Armyrow8 = new Transform(glm::mat4(1));
-	Armyrow8col1 = new Transform(glm::translate(glm::mat4(1), glm::vec3(tx, 0, -2 * ty)));
-	Armyrow8col2 = new Transform(glm::translate(glm::mat4(1), glm::vec3(2 * tx, 0, -2 * ty)));
-	Armyrow8col3 = new Transform(glm::translate(glm::mat4(1), glm::vec3(3 * tx, 0, -2 * ty)));
-	Armyrow8col4 = new Transform(glm::translate(glm::mat4(1), glm::vec3(4 * tx, 0, -2 * ty)));
-	Armyrow8col5 = new Transform(glm::translate(glm::mat4(1), glm::vec3(5 * tx, 0, -2 * ty)));
-	Armyrow8col6 = new Transform(glm::translate(glm::mat4(1), glm::vec3(0, 0, -2 * ty)));
-	Armyrow8col7 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-1 * tx, 0, -2 * ty)));
-	Armyrow8col8 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-2 * tx, 0, -2 * ty)));
-	Armyrow8col9 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-3 * tx, 0, -2 * ty)));
-	Armyrow8col10 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-4 * tx, 0, -2 * ty)));
-
-	Armyrow9 = new Transform(glm::mat4(1));
-	Armyrow9col1 = new Transform(glm::translate(glm::mat4(1), glm::vec3(tx, 0, -3 * ty)));
-	Armyrow9col2 = new Transform(glm::translate(glm::mat4(1), glm::vec3(2 * tx, 0, -3 * ty)));
-	Armyrow9col3 = new Transform(glm::translate(glm::mat4(1), glm::vec3(3 * tx, 0, -3 * ty)));
-	Armyrow9col4 = new Transform(glm::translate(glm::mat4(1), glm::vec3(4 * tx, 0, -3 * ty)));
-	Armyrow9col5 = new Transform(glm::translate(glm::mat4(1), glm::vec3(5 * tx, 0, -3 * ty)));
-	Armyrow9col6 = new Transform(glm::translate(glm::mat4(1), glm::vec3(0, 0, -3 * ty)));
-	Armyrow9col7 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-1 * tx, 0, -3 * ty)));
-	Armyrow9col8 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-2 * tx, 0, -3 * ty)));
-	Armyrow9col9 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-3 * tx, 0, -3 * ty)));
-	Armyrow9col10 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-4 * tx, 0, -3 * ty)));
-
-	Armyrow10 = new Transform(glm::mat4(1));
-	Armyrow10col1 = new Transform(glm::translate(glm::mat4(1), glm::vec3(tx, 0, -4 * ty)));
-	Armyrow10col2 = new Transform(glm::translate(glm::mat4(1), glm::vec3(2 * tx, 0, -4 * ty)));
-	Armyrow10col3 = new Transform(glm::translate(glm::mat4(1), glm::vec3(3 * tx, 0, -4 * ty)));
-	Armyrow10col4 = new Transform(glm::translate(glm::mat4(1), glm::vec3(4 * tx, 0, -4 * ty)));
-	Armyrow10col5 = new Transform(glm::translate(glm::mat4(1), glm::vec3(5 * tx, 0, -4 * ty)));
-	Armyrow10col6 = new Transform(glm::translate(glm::mat4(1), glm::vec3(0, 0, -4 * ty)));
-	Armyrow10col7 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-1 * tx, 0, -4 * ty)));
-	Armyrow10col8 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-2 * tx, 0, -4 * ty)));
-	Armyrow10col9 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-3 * tx, 0, -4 * ty)));
-	Armyrow10col10 = new Transform(glm::translate(glm::mat4(1), glm::vec3(-4 * tx, 0, -4 * ty)));
-
-	Army->addChild(Armyrow1);
-	Armyrow1->addChild(Armyrow1col1);
-	Armyrow1->addChild(Armyrow1col2);
-	Armyrow1->addChild(Armyrow1col3);
-	Armyrow1->addChild(Armyrow1col4);
-	Armyrow1->addChild(Armyrow1col5);
-	Armyrow1->addChild(Armyrow1col6);
-	Armyrow1->addChild(Armyrow1col7);
-	Armyrow1->addChild(Armyrow1col8);
-	Armyrow1->addChild(Armyrow1col9);
-	Armyrow1->addChild(Armyrow1col10);
-
-	Army->addChild(Armyrow2);
-	Armyrow2->addChild(Armyrow2col1);
-	Armyrow2->addChild(Armyrow2col2);
-	Armyrow2->addChild(Armyrow2col3);
-	Armyrow2->addChild(Armyrow2col4);
-	Armyrow2->addChild(Armyrow2col5);
-	Armyrow2->addChild(Armyrow2col6);
-	Armyrow2->addChild(Armyrow2col7);
-	Armyrow2->addChild(Armyrow2col8);
-	Armyrow2->addChild(Armyrow2col9);
-	Armyrow2->addChild(Armyrow2col10);
-
-	Army->addChild(Armyrow3);
-	Armyrow3->addChild(Armyrow3col1);
-	Armyrow3->addChild(Armyrow3col2);
-	Armyrow3->addChild(Armyrow3col3);
-	Armyrow3->addChild(Armyrow3col4);
-	Armyrow3->addChild(Armyrow3col5);
-	Armyrow3->addChild(Armyrow3col6);
-	Armyrow3->addChild(Armyrow3col7);
-	Armyrow3->addChild(Armyrow3col8);
-	Armyrow3->addChild(Armyrow3col9);
-	Armyrow3->addChild(Armyrow3col10);
-
-	Army->addChild(Armyrow4);
-	Armyrow4->addChild(Armyrow4col1);
-	Armyrow4->addChild(Armyrow4col2);
-	Armyrow4->addChild(Armyrow4col3);
-	Armyrow4->addChild(Armyrow4col4);
-	Armyrow4->addChild(Armyrow4col5);
-	Armyrow4->addChild(Armyrow4col6);
-	Armyrow4->addChild(Armyrow4col7);
-	Armyrow4->addChild(Armyrow4col8);
-	Armyrow4->addChild(Armyrow4col9);
-	Armyrow4->addChild(Armyrow4col10);
-
-	Army->addChild(Armyrow5);
-	Armyrow5->addChild(Armyrow5col1);
-	Armyrow5->addChild(Armyrow5col2);
-	Armyrow5->addChild(Armyrow5col3);
-	Armyrow5->addChild(Armyrow5col4);
-	Armyrow5->addChild(Armyrow5col5);
-	Armyrow5->addChild(Armyrow5col6);
-	Armyrow5->addChild(Armyrow5col7);
-	Armyrow5->addChild(Armyrow5col8);
-	Armyrow5->addChild(Armyrow5col9);
-	Armyrow5->addChild(Armyrow5col10);
-
-	Army->addChild(Armyrow6);
-	Armyrow6->addChild(Armyrow6col1);
-	Armyrow6->addChild(Armyrow6col2);
-	Armyrow6->addChild(Armyrow6col3);
-	Armyrow6->addChild(Armyrow6col4);
-	Armyrow6->addChild(Armyrow6col5);
-	Armyrow6->addChild(Armyrow6col6);
-	Armyrow6->addChild(Armyrow6col7);
-	Armyrow6->addChild(Armyrow6col8);
-	Armyrow6->addChild(Armyrow6col9);
-	Armyrow6->addChild(Armyrow6col10);
-
-	Army->addChild(Armyrow7);
-	Armyrow7->addChild(Armyrow7col1);
-	Armyrow7->addChild(Armyrow7col2);
-	Armyrow7->addChild(Armyrow7col3);
-	Armyrow7->addChild(Armyrow7col4);
-	Armyrow7->addChild(Armyrow7col5);
-	Armyrow7->addChild(Armyrow7col6);
-	Armyrow7->addChild(Armyrow7col7);
-	Armyrow7->addChild(Armyrow7col8);
-	Armyrow7->addChild(Armyrow7col9);
-	Armyrow7->addChild(Armyrow7col10);
-
-	Army->addChild(Armyrow8);
-	Armyrow8->addChild(Armyrow8col1);
-	Armyrow8->addChild(Armyrow8col2);
-	Armyrow8->addChild(Armyrow8col3);
-	Armyrow8->addChild(Armyrow8col4);
-	Armyrow8->addChild(Armyrow8col5);
-	Armyrow8->addChild(Armyrow8col6);
-	Armyrow8->addChild(Armyrow8col7);
-	Armyrow8->addChild(Armyrow8col8);
-	Armyrow8->addChild(Armyrow8col9);
-	Armyrow8->addChild(Armyrow8col10);
-
-	Army->addChild(Armyrow9);
-	Armyrow9->addChild(Armyrow9col1);
-	Armyrow9->addChild(Armyrow9col2);
-	Armyrow9->addChild(Armyrow9col3);
-	Armyrow9->addChild(Armyrow9col4);
-	Armyrow9->addChild(Armyrow9col5);
-	Armyrow9->addChild(Armyrow9col6);
-	Armyrow9->addChild(Armyrow9col7);
-	Armyrow9->addChild(Armyrow9col8);
-	Armyrow9->addChild(Armyrow9col9);
-	Armyrow9->addChild(Armyrow9col10);
-
-	Army->addChild(Armyrow10);
-	Armyrow10->addChild(Armyrow10col1);
-	Armyrow10->addChild(Armyrow10col2);
-	Armyrow10->addChild(Armyrow10col3);
-	Armyrow10->addChild(Armyrow10col4);
-	Armyrow10->addChild(Armyrow10col5);
-	Armyrow10->addChild(Armyrow10col6);
-	Armyrow10->addChild(Armyrow10col7);
-	Armyrow10->addChild(Armyrow10col8);
-	Armyrow10->addChild(Armyrow10col9);
-	Armyrow10->addChild(Armyrow10col10);
-		
-	bound = new Transform(glm::scale(glm::mat4(1), glm::vec3(2.8)));
-	R_bound = new BoundSphere("sphere.obj", 1,skybox->getTex());
-	Satellite = new Transform(glm::mat4(1),0);	
-	Head = new Transform(glm::translate(glm::mat4(1),glm::vec3(0,1.1,0)),4);
-	Body = new Transform(glm::mat4(1),4);
-	LeftAnt = new Transform(glm::scale(glm::rotate(glm::translate(glm::mat4(1), glm::vec3(0.5, 1.9, 0)), glm::radians(40.0f), glm::vec3(0.0, 0.0, -1.0)), glm::vec3(0.3)),3);
-	RightAnt = new Transform(glm::scale(glm::rotate(glm::translate(glm::mat4(1), glm::vec3(-0.5, 1.9, 0)), glm::radians(40.0f), glm::vec3(0.0, 0.0, 1.0)), glm::vec3(0.3)),3);
-	LeftEye = new Transform(glm::translate(glm::mat4(1), glm::vec3(0.5, 1.6, 0.7)),4);
-	RightEye = new Transform(glm::translate(glm::mat4(1), glm::vec3(-0.5, 1.6, 0.7)),4);
-	RightArm = new Transform(glm::rotate(glm::translate(glm::mat4(1), glm::vec3(1.3, 0, 0)), glm::radians(40.0f), glm::vec3(0.0, 0.0, 1.0)),5);
-	LeftArm = new Transform(glm::rotate(glm::translate(glm::mat4(1), glm::vec3(-1.3, 0, 0)), glm::radians(40.0f), glm::vec3(0.0, 0.0, -1.0)),6);
-	RightLeg = new Transform(glm::translate(glm::mat4(1), glm::vec3(0.6, -1.4, 0)),2);
-	LeftLeg = new Transform(glm::translate(glm::mat4(1), glm::vec3(-0.6, -1.4, 0)),1);
-	Satellite->addChild(Head);
-	Satellite->addChild(Body);
-	Satellite->addChild(LeftAnt);
-	Satellite->addChild(RightAnt);
-	Satellite->addChild(LeftEye);
-	Satellite->addChild(RightEye);
-	Satellite->addChild(RightArm);
-	Satellite->addChild(LeftArm);
-	Satellite->addChild(RightLeg);
-	Satellite->addChild(LeftLeg);
-	Satellite->addBound(bound);
-	
-	R_head = new Geometry("head_s.obj", 1, Mhead);
-	R_body = new Geometry("body_s.obj", 1, Mhead);
-	R_ant = new Geometry("antenna_s.obj", 1, Mhead);
-	R_eye = new Geometry("eyeball_s.obj", 1, Meye);
-	R_arm = new Geometry("limb_s.obj", 1, Mhead);
-
-	
-
-	//Satellite->addChild(bound);
-	bound->addChild(R_bound);
-	Head->addChild(R_head);
-	Body->addChild(R_body);
-	RightAnt->addChild(R_ant);
-	LeftAnt->addChild(R_ant);
-	RightEye->addChild(R_eye);
-	LeftEye->addChild(R_eye);
-	RightArm->addChild(R_arm);
-	LeftArm->addChild(R_arm);
-	RightLeg->addChild(R_arm);
-	LeftLeg->addChild(R_arm);
-
-	Armyrow1col1->addChild(Satellite);
-	Armyrow1col2->addChild(Satellite);
-	Armyrow1col3->addChild(Satellite);
-	Armyrow1col4->addChild(Satellite);
-	Armyrow1col5->addChild(Satellite);
-	Armyrow1col6->addChild(Satellite);
-	Armyrow1col7->addChild(Satellite);
-	Armyrow1col8->addChild(Satellite);
-	Armyrow1col9->addChild(Satellite);
-	Armyrow1col10->addChild(Satellite);
-
-	Armyrow2col1->addChild(Satellite);
-	Armyrow2col2->addChild(Satellite);
-	Armyrow2col3->addChild(Satellite);
-	Armyrow2col4->addChild(Satellite);
-	Armyrow2col5->addChild(Satellite);
-	Armyrow2col6->addChild(Satellite);
-	Armyrow2col7->addChild(Satellite);
-	Armyrow2col8->addChild(Satellite);
-	Armyrow2col9->addChild(Satellite);
-	Armyrow2col10->addChild(Satellite);
-
-	Armyrow3col1->addChild(Satellite);
-	Armyrow3col2->addChild(Satellite);
-	Armyrow3col3->addChild(Satellite);
-	Armyrow3col4->addChild(Satellite);
-	Armyrow3col5->addChild(Satellite);
-	Armyrow3col6->addChild(Satellite);
-	Armyrow3col7->addChild(Satellite);
-	Armyrow3col8->addChild(Satellite);
-	Armyrow3col9->addChild(Satellite);
-	Armyrow3col10->addChild(Satellite);
-
-	Armyrow4col1->addChild(Satellite);
-	Armyrow4col2->addChild(Satellite);
-	Armyrow4col3->addChild(Satellite);
-	Armyrow4col4->addChild(Satellite);
-	Armyrow4col5->addChild(Satellite);
-	Armyrow4col6->addChild(Satellite);
-	Armyrow4col7->addChild(Satellite);
-	Armyrow4col8->addChild(Satellite);
-	Armyrow4col9->addChild(Satellite);
-	Armyrow4col10->addChild(Satellite);
-
-	Armyrow5col1->addChild(Satellite);
-	Armyrow5col2->addChild(Satellite);
-	Armyrow5col3->addChild(Satellite);
-	Armyrow5col4->addChild(Satellite);
-	Armyrow5col5->addChild(Satellite);
-	Armyrow5col6->addChild(Satellite);
-	Armyrow5col7->addChild(Satellite);
-	Armyrow5col8->addChild(Satellite);
-	Armyrow5col9->addChild(Satellite);
-	Armyrow5col10->addChild(Satellite);
-
-	Armyrow6col1->addChild(Satellite);
-	Armyrow6col2->addChild(Satellite);
-	Armyrow6col3->addChild(Satellite);
-	Armyrow6col4->addChild(Satellite);
-	Armyrow6col5->addChild(Satellite);
-	Armyrow6col6->addChild(Satellite);
-	Armyrow6col7->addChild(Satellite);
-	Armyrow6col8->addChild(Satellite);
-	Armyrow6col9->addChild(Satellite);
-	Armyrow6col10->addChild(Satellite);
-
-	Armyrow7col1->addChild(Satellite);
-	Armyrow7col2->addChild(Satellite);
-	Armyrow7col3->addChild(Satellite);
-	Armyrow7col4->addChild(Satellite);
-	Armyrow7col5->addChild(Satellite);
-	Armyrow7col6->addChild(Satellite);
-	Armyrow7col7->addChild(Satellite);
-	Armyrow7col8->addChild(Satellite);
-	Armyrow7col9->addChild(Satellite);
-	Armyrow7col10->addChild(Satellite);
-
-	Armyrow8col1->addChild(Satellite);
-	Armyrow8col2->addChild(Satellite);
-	Armyrow8col3->addChild(Satellite);
-	Armyrow8col4->addChild(Satellite);
-	Armyrow8col5->addChild(Satellite);
-	Armyrow8col6->addChild(Satellite);
-	Armyrow8col7->addChild(Satellite);
-	Armyrow8col8->addChild(Satellite);
-	Armyrow8col9->addChild(Satellite);
-	Armyrow8col10->addChild(Satellite);
-
-	Armyrow9col1->addChild(Satellite);
-	Armyrow9col2->addChild(Satellite);
-	Armyrow9col3->addChild(Satellite);
-	Armyrow9col4->addChild(Satellite);
-	Armyrow9col5->addChild(Satellite);
-	Armyrow9col6->addChild(Satellite);
-	Armyrow9col7->addChild(Satellite);
-	Armyrow9col8->addChild(Satellite);
-	Armyrow9col9->addChild(Satellite);
-	Armyrow9col10->addChild(Satellite);
-
-	Armyrow10col1->addChild(Satellite);
-	Armyrow10col2->addChild(Satellite);
-	Armyrow10col3->addChild(Satellite);
-	Armyrow10col4->addChild(Satellite);
-	Armyrow10col5->addChild(Satellite);
-	Armyrow10col6->addChild(Satellite);
-	Armyrow10col7->addChild(Satellite);
-	Armyrow10col8->addChild(Satellite);
-	Armyrow10col9->addChild(Satellite);
-	Armyrow10col10->addChild(Satellite);
-
-	/*bear = new Triangle("bear.obj", 1, MBear, modelLoc);
-	bunny = new Triangle("bunny.obj", 1, MBunny, modelLoc);
-	dragon = new Triangle("dragon.obj", 1, MDragon, modelLoc);*/
-
-
 
 	LightSource = new Lighting("sphere.obj", 1, MLight, LightSourceObj, modelLoc);
 	// Set cube to be the first to display
-	currentObj = Satellite;
+	//currentObj = Satellite;
 
 	return true;
 }
@@ -1006,18 +448,22 @@ void Window::displayCallback(GLFWwindow* window)
 	// Clear the color and depth buffers.
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
 	
+	glUseProgram(RoadShader);
+	glUniformMatrix4fv(projectionLocRoad, 1, GL_FALSE, glm::value_ptr(projection));
+	glUniformMatrix4fv(viewLocRoad, 1, GL_FALSE, glm::value_ptr(view));
+	road->draw(RoadShader);
 
 	glUseProgram(Beziershader);
 	glUniformMatrix4fv(projectionLoc3, 1, GL_FALSE, glm::value_ptr(projection));
 	glUniformMatrix4fv(viewLoc3, 1, GL_FALSE, glm::value_ptr(view));
-	track->draw(Beziershader);
+	//track->draw(Beziershader);
 
 	glUseProgram(program2);
 	// Specify the values of the uniform variables we are going to use.
 	glUniformMatrix4fv(projectionLoc2, 1, GL_FALSE, glm::value_ptr(projection));
 	glUniformMatrix4fv(viewLoc2, 1, GL_FALSE, glm::value_ptr(view));
 	glUniformMatrix4fv(campos2, 1, GL_FALSE, glm::value_ptr(eye));
-	car->draw(program2, glm::scale(glm::translate(glm::mat4(1), track->getpos()), glm::vec3(1.0f)), false, false, PL, counter);
+	//car->draw(program2, glm::scale(glm::translate(glm::mat4(1), track->getpos()), glm::vec3(1.0f)), false, false, PL, counter);
 
 	glUseProgram(program);
 	Light light = LightSource->getLight();
