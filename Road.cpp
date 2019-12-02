@@ -1,24 +1,47 @@
 #include "Road.h"
 
 
-Road::Road(glm::vec3 tl, glm::vec3 tr, glm::vec3 bl, glm::vec3 br)
+Road::Road(glm::vec3 pos1, float l, float w)
 {
 	model = glm::mat4(1.0f);
 	color = glm::vec3(0.0f, 1.0f, 0.0f);
+	length = l;
+	width = w;
+	posr = pos1;
+
+	float minX = posr.x - (width / 2.0);
+	float maxX = posr.x + (width / 2.0);
+	float minZ = posr.z - (length / 2.0);
+	float maxZ = posr.z + (length / 2.0);
+	float minY = -10.0f;
 	//texture = t;
-	vertices.push_back(tl);//tl
-	vertices.push_back(bl);//tr
-	vertices.push_back(br);//bl
-	vertices.push_back(tr);//br
 
-	tex.push_back(glm::vec2(0.0f, 1.0f));
-	tex.push_back(glm::vec2(1.0f, 1.0f));
-	tex.push_back(glm::vec2(0.0f, 0.0f));
-	tex.push_back(glm::vec2(1.0f, 0.0f));
+	vertices.push_back(glm::vec3(minX, minY, maxZ));
+	vertices.push_back(glm::vec3(minX, minY, minZ));
+	vertices.push_back(glm::vec3(maxX, minY, minZ));
+	vertices.push_back(glm::vec3(maxX, minY, maxZ));
 
+	//vertices.push_back(tl);//tl
+	//vertices.push_back(bl);//tr
+	//vertices.push_back(br);//bl
+	//vertices.push_back(tr);//br
 
 	indices.push_back(glm::ivec3(0, 1, 2));
 	indices.push_back(glm::ivec3(2, 3, 0));
+
+	tex.push_back(glm::vec2(0.0f, 1.0f));//0
+	tex.push_back(glm::vec2(0.0f, 0.0f));//1
+	tex.push_back(glm::vec2(1.0f, 0.0f));//2
+	tex.push_back(glm::vec2(1.0f, 0.0f));//2
+	tex.push_back(glm::vec2(1.0f, 1.0f));//3
+	tex.push_back(glm::vec2(0.0f, 1.0f));//0
+
+	pos.push_back(vertices[0]);
+	pos.push_back(vertices[1]);
+	pos.push_back(vertices[2]);
+	pos.push_back(vertices[2]);
+	pos.push_back(vertices[3]);
+	pos.push_back(vertices[0]);
 
 	texture = loadTexture();
 
@@ -34,22 +57,22 @@ Road::Road(glm::vec3 tl, glm::vec3 tr, glm::vec3 bl, glm::vec3 br)
 	// Bind to the first VBO. We will use it to store the vertices.
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	// Pass in the data.
-	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * vertices.size(),
-		vertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * pos.size(),
+		pos.data(), GL_STATIC_DRAW);
 	// Enable vertex attribute 0. 
 	// We will be able to access vertices through it.
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
 
 	// Bind to the second VBO. We will use it to store the tec cords.
-	//glBindBuffer(GL_ARRAY_BUFFER, vbot);
-	//// Pass in the data.
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * tex.size(),
-	//	tex.data(), GL_STATIC_DRAW);
-	//// Enable vertex attribute 1. 
-	//// We will be able to access vertices through it.
-	//glEnableVertexAttribArray(1);
-	//glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), 0);
+	glBindBuffer(GL_ARRAY_BUFFER, vbot);
+	// Pass in the data.
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * tex.size(),
+		tex.data(), GL_STATIC_DRAW);
+	// Enable vertex attribute 1. 
+	// We will be able to access vertices through it.
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), 0);
 
 	// Bind to the second VBO. We will use it to store the indices.
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
@@ -77,7 +100,7 @@ GLuint Road::loadTexture()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	// load and generate the texture
 	int width, height, nrChannels;
-	unsigned char *data = stbi_load("Building1.jpg", &width, &height, &nrChannels, 0);
+	unsigned char *data = stbi_load("roadTex.jpg", &width, &height, &nrChannels, 0);
 	if (data)
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -100,11 +123,13 @@ void Road::draw(GLuint shaderProgram){
 	//glDepthMask(GL_FALSE);
 	// Bind to the VAO.
 	glBindVertexArray(vao);
-	//glBindTexture(GL_TEXTURE_2D, texture);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture);
 
 	// Set point size.
 	// Draw points 
-	glDrawElements(GL_TRIANGLES, 3 * indices.size(), GL_UNSIGNED_INT, 0);;
+	//glDrawElements(GL_TRIANGLES, 3 * indices.size(), GL_UNSIGNED_INT, 0);
+	glDrawArrays(GL_TRIANGLES, 0, pos.size());
 	// Unbind from the VAO.
 	glBindVertexArray(0);
 	//glDepthMask(GL_TRUE);

@@ -201,7 +201,7 @@ bool Window::initializeObjects()
 {
 	// Create a cube of size 5.
 	skybox = new SkyBox(450.0f);
-	road = new Road(glm::vec3(-2.5f, -1.0f, 10.0f), glm::vec3(2.5f, -1.0f, 10.0f), glm::vec3(-2.5f, -1.0f, -10.0f), glm::vec3(2.5f, -1.0f, -10.0f));
+	road = new Road(glm::vec3(0.0f,0.0f,0.0f),10,5);
 	building = new Building(glm::vec3(0.0f, 0.0f, 10.0f), 5.0f, 5.0f, 10.0f);
 	car = new BoundSphere("sphere.obj", 1,skybox->getTex());
 	curve = new Bezier(glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(3.0f, -1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 1.0f), glm::vec3(-1.0f, 0.0f, 1.0f));

@@ -26,9 +26,11 @@ private:
 	//std::vector<glm::ivec3> indicesN;
 	// vertices[];
 
+	std::vector<glm::vec3> pos;
+	glm::vec3 posr;
 	glm::mat4 model;
-	//float length;
-	//float width;
+	float length;
+	float width;
 	glm::vec3 BL;
 	glm::vec3 BR;
 	glm::vec3 TL;
@@ -40,7 +42,7 @@ private:
 
 public:
 
-	Road(glm::vec3 tl, glm::vec3 tr, glm::vec3 bl, glm::vec3 br);
+	Road(glm::vec3 pos1, float l, float w);
 	~Road();
 	GLuint loadTexture();
 	void draw(GLuint shaderProgram);

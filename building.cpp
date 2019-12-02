@@ -9,14 +9,14 @@ Building::Building(glm::vec3 pos1, float l, float w, float h)
 	length = l;
 	width = w;
 	height = h;
-	pos = pos1;
+	posb = pos1;
 	
-	float minX = pos.x - (length / 2.0);
-	float maxX = pos.x + (length / 2.0);
+	float minX = posb.x - (length / 2.0);
+	float maxX = posb.x + (length / 2.0);
 	float minY = 0.0f;
 	float maxY = height;
-	float minZ = pos.z - (width / 2.0);
-	float maxZ = pos.z + (width / 2.0);
+	float minZ = posb.z - (width / 2.0);
+	float maxZ = posb.z + (width / 2.0);
 	/*
 	 * Cube indices used below.
 	 *    4----7
@@ -49,66 +49,109 @@ Building::Building(glm::vec3 pos1, float l, float w, float h)
 	indices.push_back(glm::ivec3(0, 1, 2));
 	indices.push_back(glm::ivec3(2, 3, 0));
 	//tex
-	texcords.push_back(glm::vec2(1.0f, 0.0f));//2
+	texcords.push_back(glm::vec2(0.0f, 1.0f));//0
 	texcords.push_back(glm::vec2(0.0f, 0.0f));//1
-	texcords.push_back(glm::vec2(0.0f, 1.0f));//0
-	texcords.push_back(glm::vec2(0.0f, 1.0f));//0
-	texcords.push_back(glm::vec2(1.0f, 1.0f));//3
 	texcords.push_back(glm::vec2(1.0f, 0.0f));//2
+	texcords.push_back(glm::vec2(1.0f, 0.0f));//2
+	texcords.push_back(glm::vec2(1.0f, 1.0f));//3
+	texcords.push_back(glm::vec2(0.0f, 1.0f));//0
+
+	pos.push_back(vertices[0]);
+	pos.push_back(vertices[1]);
+	pos.push_back(vertices[2]);
+	pos.push_back(vertices[2]);
+	pos.push_back(vertices[3]);
+	pos.push_back(vertices[0]);
 
 	// Back face.
 	indices.push_back(glm::ivec3(7, 6, 5));
 	indices.push_back(glm::ivec3(5, 4, 7));
 	//tex
-	texcords.push_back(glm::vec2(0.0f, 1.0f));//7
-	texcords.push_back(glm::vec2(0.0f, 0.0f));//6
-	texcords.push_back(glm::vec2(1.0f, 0.0f));//5
-	texcords.push_back(glm::vec2(1.0f, 0.0f));//5
-	texcords.push_back(glm::vec2(1.0f, 1.0f));//4
-	texcords.push_back(glm::vec2(1.0f, 1.0f));//7
+	texcords.push_back(glm::vec2(0.0f, 1.0f));//0
+	texcords.push_back(glm::vec2(0.0f, 0.0f));//1
+	texcords.push_back(glm::vec2(1.0f, 0.0f));//2
+	texcords.push_back(glm::vec2(1.0f, 0.0f));//2
+	texcords.push_back(glm::vec2(1.0f, 1.0f));//3
+	texcords.push_back(glm::vec2(0.0f, 1.0f));//0
+
+	pos.push_back(vertices[7]);
+	pos.push_back(vertices[6]);
+	pos.push_back(vertices[5]);
+	pos.push_back(vertices[5]);
+	pos.push_back(vertices[4]);
+	pos.push_back(vertices[7]);
 
 	// Right face.
 	indices.push_back(glm::ivec3(3, 2, 6));
 	indices.push_back(glm::ivec3(6, 7, 3));
 	//tex
-	texcords.push_back(glm::vec2(0.0f, 1.0f));//3
-	texcords.push_back(glm::vec2(0.0f, 0.0f));//2
-	texcords.push_back(glm::vec2(0.0f, 1.0f));//6
-	texcords.push_back(glm::vec2(0.0f, 1.0f));//6
-	texcords.push_back(glm::vec2(1.0f, 1.0f));//7
-	texcords.push_back(glm::vec2(0.0f, 1.0f));//3
+	texcords.push_back(glm::vec2(0.0f, 1.0f));//0
+	texcords.push_back(glm::vec2(0.0f, 0.0f));//1
+	texcords.push_back(glm::vec2(1.0f, 0.0f));//2
+	texcords.push_back(glm::vec2(1.0f, 0.0f));//2
+	texcords.push_back(glm::vec2(1.0f, 1.0f));//3
+	texcords.push_back(glm::vec2(0.0f, 1.0f));//0
+
+	pos.push_back(vertices[3]);
+	pos.push_back(vertices[2]);
+	pos.push_back(vertices[6]);
+	pos.push_back(vertices[6]);
+	pos.push_back(vertices[7]);
+	pos.push_back(vertices[3]);
+
 	// Left face.
 	indices.push_back(glm::ivec3(4, 5, 1));
 	indices.push_back(glm::ivec3(1, 0, 4));
 	//tex
-	texcords.push_back(glm::vec2(0.0f, 1.0f));//4
-	texcords.push_back(glm::vec2(0.0f, 0.0f));//5
-	texcords.push_back(glm::vec2(1.0f, 0.0f));//1
-	texcords.push_back(glm::vec2(1.0f, 0.0f));//1
-	texcords.push_back(glm::vec2(1.0f, 1.0f));//0
-	texcords.push_back(glm::vec2(1.0f, 0.0f));//4
+	texcords.push_back(glm::vec2(0.0f, 1.0f));//0
+	texcords.push_back(glm::vec2(0.0f, 0.0f));//1
+	texcords.push_back(glm::vec2(1.0f, 0.0f));//2
+	texcords.push_back(glm::vec2(1.0f, 0.0f));//2
+	texcords.push_back(glm::vec2(1.0f, 1.0f));//3
+	texcords.push_back(glm::vec2(0.0f, 1.0f));//0
+
+	pos.push_back(vertices[4]);
+	pos.push_back(vertices[5]);
+	pos.push_back(vertices[1]);
+	pos.push_back(vertices[1]);
+	pos.push_back(vertices[0]);
+	pos.push_back(vertices[4]);
 
 	// Top face.
 	indices.push_back(glm::ivec3(4, 0, 3));
 	indices.push_back(glm::ivec3(3, 7, 4));
 	//tex
-	texcords.push_back(glm::vec2(0.0f, 1.0f));//4
-	texcords.push_back(glm::vec2(0.0f, 0.0f));//0
-	texcords.push_back(glm::vec2(0.0f, 1.0f));//3
-	texcords.push_back(glm::vec2(0.0f, 1.0f));//3
-	texcords.push_back(glm::vec2(1.0f, 1.0f));//7
-	texcords.push_back(glm::vec2(0.0f, 1.0f));//4
+	texcords.push_back(glm::vec2(0.0f, 1.0f));//0
+	texcords.push_back(glm::vec2(0.0f, 0.0f));//1
+	texcords.push_back(glm::vec2(1.0f, 0.0f));//2
+	texcords.push_back(glm::vec2(1.0f, 0.0f));//2
+	texcords.push_back(glm::vec2(1.0f, 1.0f));//3
+	texcords.push_back(glm::vec2(0.0f, 1.0f));//0
+	
+	pos.push_back(vertices[4]);
+	pos.push_back(vertices[0]);
+	pos.push_back(vertices[3]);
+	pos.push_back(vertices[3]);
+	pos.push_back(vertices[7]);
+	pos.push_back(vertices[4]);
 
 	// Bottom face.
 	indices.push_back(glm::ivec3(1, 5, 6));
 	indices.push_back(glm::ivec3(6, 2, 1));
 	//tex
-	texcords.push_back(glm::vec2(0.0f, 1.0f));//4
-	texcords.push_back(glm::vec2(0.0f, 0.0f));//0
-	texcords.push_back(glm::vec2(1.0f, 0.0f));//3
-	texcords.push_back(glm::vec2(1.0f, 0.0f));//3
-	texcords.push_back(glm::vec2(1.0f, 1.0f));//7
-	texcords.push_back(glm::vec2(1.0f, 0.0f));//4
+	texcords.push_back(glm::vec2(0.0f, 1.0f));//0
+	texcords.push_back(glm::vec2(0.0f, 0.0f));//1
+	texcords.push_back(glm::vec2(1.0f, 0.0f));//2
+	texcords.push_back(glm::vec2(1.0f, 0.0f));//2
+	texcords.push_back(glm::vec2(1.0f, 1.0f));//3
+	texcords.push_back(glm::vec2(0.0f, 1.0f));//0
+
+	pos.push_back(vertices[1]);
+	pos.push_back(vertices[5]);
+	pos.push_back(vertices[6]);
+	pos.push_back(vertices[6]);
+	pos.push_back(vertices[2]);
+	pos.push_back(vertices[1]);
 
 	texture = loadTexture();
 
@@ -124,22 +167,22 @@ Building::Building(glm::vec3 pos1, float l, float w, float h)
 	// Bind to the first VBO. We will use it to store the vertices.
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	// Pass in the data.
-	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * vertices.size(),
-		vertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * pos.size(),
+		pos.data(), GL_STATIC_DRAW);
 	// Enable vertex attribute 0. 
 	// We will be able to access vertices through it.
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
 
-	//// Bind to the first VBO. We will use it to store the vertices.
-	//glBindBuffer(GL_ARRAY_BUFFER, vbot);
-	//// Pass in the data.
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * texcords.size(),
-	//	texcords.data(), GL_STATIC_DRAW);
-	//// Enable vertex attribute 0. 
-	//// We will be able to access vertices through it.
-	//glEnableVertexAttribArray(1);
-	//glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), 0);
+	// Bind to the first VBO. We will use it to store the vertices.
+	glBindBuffer(GL_ARRAY_BUFFER, vbot);
+	// Pass in the data.
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * texcords.size(),
+		texcords.data(), GL_STATIC_DRAW);
+	// Enable vertex attribute 0. 
+	// We will be able to access vertices through it.
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), 0);
 
 	// Bind to the second VBO. We will use it to store the indices.
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
@@ -197,11 +240,13 @@ void Building::draw(GLuint shaderProgram)
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 	// Bind to the VAO.
 	glBindVertexArray(vao);
-	//glBindTexture(GL_TEXTURE_2D, texture);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture);
 
 	// Set point size.
 	// Draw points 
-	glDrawElements(GL_TRIANGLES, 3*indices.size(), GL_UNSIGNED_INT, 0);;
+	//glDrawElements(GL_TRIANGLES,3*indices.size(), GL_UNSIGNED_INT, 0);
+	glDrawArrays(GL_TRIANGLES, 0, pos.size());
 	// Unbind from the VAO.
 	glBindVertexArray(0);
 

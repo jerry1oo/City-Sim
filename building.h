@@ -22,7 +22,8 @@ public:
 	GLuint modelLoc, colorLoc;
 	glm::vec3 color;
 private:
-	glm::vec3 pos;
+	std::vector<glm::vec3> pos;
+	glm::vec3 posb;
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::ivec3> indices;
 	std::vector<glm::vec2> texcords;
