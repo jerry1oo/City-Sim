@@ -102,6 +102,7 @@
   <ItemGroup>
     <ClCompile Include="Bezier.cpp" />
     <ClCompile Include="BoundSphere.cpp" />
+    <ClCompile Include="building.cpp" />
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="main.cpp" />

@@ -20,13 +20,12 @@ class Road {
 private:
 
 	std::vector<glm::vec3> vertices;
-	std::vector<glm::vec3> normals;
+	std::vector<glm::vec2> tex;
 	std::vector<glm::ivec3> indices;
 	//std::vector<glm::ivec3> indicesT;
 	//std::vector<glm::ivec3> indicesN;
 	// vertices[];
 
-	GLuint modelLoc;
 	glm::mat4 model;
 	//float length;
 	//float width;
@@ -35,13 +34,15 @@ private:
 	glm::vec3 TL;
 	glm::vec3 TR;
 	GLuint texture;
-	GLuint vao, vbo, ebo;
+	glm::vec3 color;
+	GLuint modelLoc, colorLoc;
+	GLuint vao, vbo, vbot, ebo;
 
 public:
 
 	Road(glm::vec3 tl, glm::vec3 tr, glm::vec3 bl, glm::vec3 br);
 	~Road();
-	GLuint loadtex();
+	GLuint loadTexture();
 	void draw(GLuint shaderProgram);
 
 };

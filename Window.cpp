@@ -16,7 +16,15 @@ Bezier * Window::curve;
 Track * Window::track;
 int Window::movement = 0;
 
+int Window::frames = 4;
+int Window::framescounter = 10;
+bool Window::blur = false;
+
+
 Road * Window::road;
+Building * Window::building;
+
+
 
 Lighting * Window::LightSource;
 
@@ -72,9 +80,13 @@ GLuint Window::program1;
 GLuint Window::program2;
 GLuint Window::Beziershader;
 GLuint Window::RoadShader;
+GLuint Window::BuildingShader;
 
 GLuint Window::projectionLocRoad;
 GLuint Window::viewLocRoad;
+
+GLuint Window::projectionLocBuilding;
+GLuint Window::viewLocBuilding;
 
 GLuint Window::projectionLoc1; // Location of projection in shader.
 GLuint Window::projectionLoc2; // Location of projection in shader.
@@ -118,6 +130,7 @@ bool Window::initializeProgram() {
 	program2 = LoadShaders("shaders/car.vert", "shaders/car.frag");
 	Beziershader = LoadShaders("shaders/Bezier.vert", "shaders/Bezier.frag");
 	RoadShader = LoadShaders("shaders/Road.vert", "shaders/Road.frag");
+	BuildingShader = LoadShaders("shaders/Building.vert", "shaders/Building.frag");
 
 	// Check the shader program.
 	if (!program)
@@ -134,8 +147,12 @@ bool Window::initializeProgram() {
 	// Activate the shader program.
 
 	glUseProgram(RoadShader);
-	projectionLocRoad = glGetUniformLocation(program2, "projection");
-	viewLocRoad = glGetUniformLocation(program2, "view");
+	projectionLocRoad = glGetUniformLocation(RoadShader, "projection");
+	viewLocRoad = glGetUniformLocation(RoadShader, "view");
+
+	glUseProgram(BuildingShader);
+	projectionLocBuilding = glGetUniformLocation(BuildingShader, "projection");
+	viewLocBuilding = glGetUniformLocation(BuildingShader, "view");
 
 	glUseProgram(program2);
 	projectionLoc2 = glGetUniformLocation(program2, "projection");
@@ -183,8 +200,9 @@ bool Window::initializeProgram() {
 bool Window::initializeObjects()
 {
 	// Create a cube of size 5.
-	skybox = new SkyBox(400.0f);
-	road = new Road(glm::vec3(-0.5f, -1.0f, 0.10f), glm::vec3(0.5f, -1.0f, 0.10f), glm::vec3(-0.5f, -1.0f, -0.10f), glm::vec3(0.5f, -1.0f, -0.10f));
+	skybox = new SkyBox(450.0f);
+	road = new Road(glm::vec3(-2.5f, -1.0f, 10.0f), glm::vec3(2.5f, -1.0f, 10.0f), glm::vec3(-2.5f, -1.0f, -10.0f), glm::vec3(2.5f, -1.0f, -10.0f));
+	building = new Building(glm::vec3(0.0f, 0.0f, 10.0f), 5.0f, 5.0f, 10.0f);
 	car = new BoundSphere("sphere.obj", 1,skybox->getTex());
 	curve = new Bezier(glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(3.0f, -1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 1.0f), glm::vec3(-1.0f, 0.0f, 1.0f));
 	track = new Track();
@@ -453,6 +471,11 @@ void Window::displayCallback(GLFWwindow* window)
 	glUniformMatrix4fv(viewLocRoad, 1, GL_FALSE, glm::value_ptr(view));
 	road->draw(RoadShader);
 
+	glUseProgram(BuildingShader);
+	glUniformMatrix4fv(projectionLocBuilding, 1, GL_FALSE, glm::value_ptr(projection));
+	glUniformMatrix4fv(viewLocBuilding, 1, GL_FALSE, glm::value_ptr(view));
+	building->draw(BuildingShader);
+
 	glUseProgram(Beziershader);
 	glUniformMatrix4fv(projectionLoc3, 1, GL_FALSE, glm::value_ptr(projection));
 	glUniformMatrix4fv(viewLoc3, 1, GL_FALSE, glm::value_ptr(view));
@@ -511,15 +534,51 @@ void Window::displayCallback(GLFWwindow* window)
 	skybox->draw(program1);
 	//LightSource->draw();
 
+
 	// Gets events, including input such as keyboard and mouse or window resizing.
 	glfwPollEvents();
 	// Swap buffers.
 	glfwSwapBuffers(window);
+	//int n = 5;
+	//int i = 0;
+	//while (true) {
+	//	if (blur) {
+
+
+	//		if (framescounter == 0) {
+	//			glAccum(GL_LOAD, 1.0 / frames);
+	//		}
+	//		else {
+	//			glAccum(GL_ACCUM, 1.0 / frames);
+	//		}
+
+	//		i++;
+
+	//		if (framescounter >= frames) {
+	//			framescounter = 0;
+	//			glAccum(GL_RETURN, 1.0);
+	//			// Gets events, including input such as keyboard and mouse or window resizing.
+	//			glfwPollEvents();
+	//			// Swap buffers.
+	//			glfwSwapBuffers(window);
+	//		}
+	//	}
+	//	else {
+	//		break;
+	//	}
+	//}
+
+
+
+
 }
 
 
 void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+
+	float dx = 0;
+	float dz = 0;
 	
 	// Check for a key press.
 	if (action == GLFW_PRESS)
@@ -534,9 +593,17 @@ void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, 
 		//	// Set currentObj to bear
 		//	currentObj = cube;
 		//	break;
-		case GLFW_KEY_RIGHT:
-			std::cout << "right" << std::endl;
-			track->cpinc();
+		case GLFW_KEY_W:
+			dz = 2;
+			break;
+		case GLFW_KEY_A:
+			dx = -2;
+			break;
+		case GLFW_KEY_S:
+			dz = -2;
+			break;
+		case GLFW_KEY_D:
+			dx = 2;
 			break;
 		case GLFW_KEY_LEFT:
 			std::cout << "left" << std::endl;
@@ -613,7 +680,7 @@ void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, 
 				Pswitch = true;
 			}
 			break;
-		case GLFW_KEY_D:
+		case GLFW_KEY_M:
 			// change size
 			if (Dswitch == true) {
 				Dswitch = false;
@@ -643,6 +710,13 @@ void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, 
 		default:
 			break;
 		}
+
+		glm::vec3 forward(view[0][2], view[1][2], view[2][2]);
+		glm::vec3 strafe(view[0][0], view[1][0], view[2][0]);
+		float speed = 0.20f;
+		eye += (-1 * dz*forward + dx * strafe) * speed;
+		Window::view = glm::lookAt(Window::eye, Window::center, Window::up);
+
 	}
 }
 
@@ -669,6 +743,10 @@ void Window::cursorPos(GLFWwindow* window, double x, double y)
 			Window::view = glm::lookAt(Window::eye, Window::center + Window::eye, Window::up);
 						
 		}
+		//glm::vec2 mouse_delta = glm::vec2(x, y) - glm::vec2(mx,my);
+		//float mouseX_Sensitivity = 0.25f;
+		//float mouseY_Sensitivity = 0.25f;
+
 	}
 
 	mx = x;
@@ -680,6 +758,7 @@ void Window::mouseClick(GLFWwindow* window, int button, int action, int mods) {
 		switch (button) {
 			case GLFW_MOUSE_BUTTON_LEFT:
 				glfwGetCursorPos(window, &mx, &my);
+				blur = true;
 				LDown = true;
 				break;
 		}
@@ -687,6 +766,7 @@ void Window::mouseClick(GLFWwindow* window, int button, int action, int mods) {
 	else if (action == GLFW_RELEASE) {
 		switch (button) {
 			case GLFW_MOUSE_BUTTON_LEFT:
+				blur = false;
 				LDown = false;
 				break;
 		}

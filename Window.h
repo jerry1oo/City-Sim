@@ -30,11 +30,16 @@
 #include "SkyBox.h"
 #include "Track.h"
 #include "Road.h"
-
+#include "building.h"
 
 class Window
 {
 public:
+	static int frames;
+	static int framescounter;
+	static bool blur;
+	
+
 	static int width;
 	static int height;
 	static int movement;
@@ -48,6 +53,7 @@ public:
 	static Bezier * curve;
 	static Track * track;
 	static Road * road;
+	static Building * building;
 
 
 	static glm::vec3 CullCenter;
@@ -80,6 +86,7 @@ public:
 	static GLuint campos, campos1, campos2;
 
 	static GLuint RoadShader, projectionLocRoad, viewLocRoad;
+	static GLuint BuildingShader, projectionLocBuilding, viewLocBuilding;
 
 	static GLuint program, program1, program2, Beziershader, projectionLoc, viewLoc, modelLoc, colorLoc, lightLoc, projectionLoc1, viewLoc1, projectionLoc2, viewLoc2, projectionLoc3, viewLoc3;
 
