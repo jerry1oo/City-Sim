@@ -29,8 +29,10 @@
 #include "BoundSphere.h"
 #include "SkyBox.h"
 #include "Track.h"
-#include "Road.h"
-#include "building.h"
+//#include "Road.h"
+//#include "building.h"
+#include "City.h"
+//#include "Ground.h"
 
 class Window
 {
@@ -52,8 +54,10 @@ public:
 	static BoundSphere * car;
 	static Bezier * curve;
 	static Track * track;
-	static Road * road;
-	static Building * building;
+	//static Road * road;
+	//static Building * building;
+	static City * city;
+	//static Ground * ground;
 
 
 	static glm::vec3 CullCenter;
@@ -77,6 +81,7 @@ public:
 	static double fov;
 	static glm::mat4 view;
 	static glm::vec3 eye, center, up;
+
 
 	
 

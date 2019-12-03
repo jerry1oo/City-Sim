@@ -1,14 +1,14 @@
-#include "Road.h"
+#include "Ground.h"
 
 
-Road::Road(glm::vec3 pos1, float l, float w, GLchar* I)
+Ground::Ground(glm::vec3 pos1, float l, float w, bool m)
 {
 	model = glm::mat4(1.0f);
 	color = glm::vec3(0.0f, 1.0f, 0.0f);
 	length = l;
 	width = w;
 	posr = pos1;
-	image = I;
+	if (m) {
 		float minX = posr.x - (width / 2.0);
 		float maxX = posr.x + (width / 2.0);
 		float minZ = posr.z - (length / 2.0);
@@ -42,7 +42,42 @@ Road::Road(glm::vec3 pos1, float l, float w, GLchar* I)
 		pos.push_back(vertices[2]);
 		pos.push_back(vertices[3]);
 		pos.push_back(vertices[0]);
-	
+	}
+	else {
+		float minX = posr.x - (width / 2.0);
+		float maxX = posr.x + (width / 2.0);
+		float minZ = posr.z - (length / 2.0);
+		float maxZ = posr.z + (length / 2.0);
+		float minY = -10.0f;
+		//texture = t;
+
+		vertices.push_back(glm::vec3(minX, minY, maxZ));
+		vertices.push_back(glm::vec3(minX, minY, minZ));
+		vertices.push_back(glm::vec3(maxX, minY, minZ));
+		vertices.push_back(glm::vec3(maxX, minY, maxZ));
+
+		//vertices.push_back(tl);//tl
+		//vertices.push_back(bl);//tr
+		//vertices.push_back(br);//bl
+		//vertices.push_back(tr);//br
+
+		indices.push_back(glm::ivec3(1, 2, 3));
+		indices.push_back(glm::ivec3(3, 0, 1));
+
+		tex.push_back(glm::vec2(0.0f, 1.0f));//0
+		tex.push_back(glm::vec2(0.0f, 0.0f));//1
+		tex.push_back(glm::vec2(1.0f, 0.0f));//2
+		tex.push_back(glm::vec2(1.0f, 0.0f));//2
+		tex.push_back(glm::vec2(1.0f, 1.0f));//3
+		tex.push_back(glm::vec2(0.0f, 1.0f));//0
+
+		pos.push_back(vertices[1]);
+		pos.push_back(vertices[2]);
+		pos.push_back(vertices[3]);
+		pos.push_back(vertices[3]);
+		pos.push_back(vertices[0]);
+		pos.push_back(vertices[1]);
+	}
 
 	texture = loadTexture();
 
@@ -85,11 +120,11 @@ Road::Road(glm::vec3 pos1, float l, float w, GLchar* I)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	// Unbind from the VAO.
 	glBindVertexArray(0);
-	
+
 
 }
 
-GLuint Road::loadTexture()
+GLuint Ground::loadTexture()
 {
 	unsigned int texture1;
 	glGenTextures(1, &texture1);
@@ -101,7 +136,7 @@ GLuint Road::loadTexture()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	// load and generate the texture
 	int width, height, nrChannels;
-	unsigned char *data = stbi_load(image, &width, &height, &nrChannels, 0);
+	unsigned char *data = stbi_load("GroundTex1.jpg", &width, &height, &nrChannels, 0);
 	if (data)
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -115,12 +150,12 @@ GLuint Road::loadTexture()
 	return texture1;
 }
 
-void Road::draw(GLuint shaderProgram){
+void Ground::draw(GLuint shaderProgram) {
 	colorLoc = glGetUniformLocation(shaderProgram, "color");
 	glUniform3fv(colorLoc, 1, glm::value_ptr(color));
 	modelLoc = glGetUniformLocation(shaderProgram, "model");
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-	
+
 	//glDepthMask(GL_FALSE);
 	// Bind to the VAO.
 	glBindVertexArray(vao);

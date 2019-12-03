@@ -21,8 +21,10 @@ int Window::framescounter = 10;
 bool Window::blur = false;
 
 
-Road * Window::road;
-Building * Window::building;
+//Road * Window::road;
+//Building * Window::building;
+City * Window::city;
+//Ground * Window::ground;
 
 
 
@@ -200,9 +202,12 @@ bool Window::initializeProgram() {
 bool Window::initializeObjects()
 {
 	// Create a cube of size 5.
+	city = new City();
+	city->BuildCity();
+	//ground = new Ground(glm::vec3(0.0f, -1.0f, 0.0f), 400, 400, false);
 	skybox = new SkyBox(450.0f);
-	road = new Road(glm::vec3(0.0f,0.0f,0.0f),10,5);
-	building = new Building(glm::vec3(0.0f, 0.0f, 10.0f), 5.0f, 5.0f, 10.0f);
+	//road = new Road(glm::vec3(0.0f,0.0f,0.0f),10,5);
+	//building = new Building(glm::vec3(0.0f, 0.0f, 10.0f), 5.0f, 5.0f, 10.0f);
 	car = new BoundSphere("sphere.obj", 1,skybox->getTex());
 	curve = new Bezier(glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(3.0f, -1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 1.0f), glm::vec3(-1.0f, 0.0f, 1.0f));
 	track = new Track();
@@ -469,12 +474,13 @@ void Window::displayCallback(GLFWwindow* window)
 	glUseProgram(RoadShader);
 	glUniformMatrix4fv(projectionLocRoad, 1, GL_FALSE, glm::value_ptr(projection));
 	glUniformMatrix4fv(viewLocRoad, 1, GL_FALSE, glm::value_ptr(view));
-	road->draw(RoadShader);
+	city->draw(RoadShader);
+	//ground->draw(RoadShader);
 
-	glUseProgram(BuildingShader);
+	/*glUseProgram(BuildingShader);
 	glUniformMatrix4fv(projectionLocBuilding, 1, GL_FALSE, glm::value_ptr(projection));
 	glUniformMatrix4fv(viewLocBuilding, 1, GL_FALSE, glm::value_ptr(view));
-	building->draw(BuildingShader);
+	building->draw(BuildingShader);*/
 
 	glUseProgram(Beziershader);
 	glUniformMatrix4fv(projectionLoc3, 1, GL_FALSE, glm::value_ptr(projection));
@@ -581,7 +587,7 @@ void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, 
 	float dz = 0;
 	
 	// Check for a key press.
-	if (action == GLFW_PRESS)
+	if (action == GLFW_PRESS || action == GLFW_REPEAT)
 	{
 		switch (key)
 		{

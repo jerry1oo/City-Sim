@@ -13,7 +13,7 @@ Building::Building(glm::vec3 pos1, float l, float w, float h)
 	
 	float minX = posb.x - (length / 2.0);
 	float maxX = posb.x + (length / 2.0);
-	float minY = 0.0f;
+	float minY = -10.0f;
 	float maxY = height;
 	float minZ = posb.z - (width / 2.0);
 	float maxZ = posb.z + (width / 2.0);

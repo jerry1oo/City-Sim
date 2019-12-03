@@ -1,5 +1,5 @@
-#ifndef _Road_H_
-#define _Road_H_
+#ifndef _GROUND_H_
+#define _GROUND_H_
 
 #ifdef __APPLE__
 #include <OpenGL/gl3.h>
@@ -16,18 +16,15 @@
 
 
 
-class Road {
+class Ground {
 private:
 
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec2> tex;
 	std::vector<glm::ivec3> indices;
-
 	//std::vector<glm::ivec3> indicesT;
 	//std::vector<glm::ivec3> indicesN;
 	// vertices[];
-
-	GLchar* image;
 
 	std::vector<glm::vec3> pos;
 	glm::vec3 posr;
@@ -45,12 +42,11 @@ private:
 
 public:
 
-	Road(glm::vec3 pos1, float l, float w, GLchar* I);
-	~Road();
+	Ground(glm::vec3 pos1, float l, float w, bool m);
+	~Ground();
 	GLuint loadTexture();
 	void draw(GLuint shaderProgram);
 
 };
 
 #endif
-
