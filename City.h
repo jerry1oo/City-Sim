@@ -12,6 +12,7 @@
 #include <list>
 #include<vector>
 #include<iostream>
+#include <stdlib.h> 
 #include "building.h"
 #include "Road.h"
 #include "Ground.h"
@@ -31,7 +32,9 @@ public:
 	void addBuilding(Building* BuildingNode);
 	void addRoad(Road* RoadNode);
 	void addGround(Ground* GroundNode);
+	float RandomFloat(float a, float b);
 	void BuildCity();
+	void GenB1(glm::vec3 pos1);
 	void draw(GLuint shaderProgram);
 	void update();
 };

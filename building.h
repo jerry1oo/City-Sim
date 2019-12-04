@@ -40,7 +40,16 @@ public:
 
 	Building(glm::vec3 pos, float l, float w, float h);
 	~Building();
-	GLuint loadTexture();
+	GLuint loadTexture(GLchar* image);
+	void BuildingGen1();
+	void BuildingGen2();
+	void BuildingGen3();
+	void BuildingGen4();
+	void BuildingGen5();
+	void BuildingGen6();
+	void BuildingGen7();
+	void BuildingGen8();
+	void BuildingGen9();
 	void draw(GLuint shaderProgram);
 	void update();
 };

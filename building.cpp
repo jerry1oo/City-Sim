@@ -11,6 +11,50 @@ Building::Building(glm::vec3 pos1, float l, float w, float h)
 	height = h;
 	posb = pos1;
 	
+	BuildingGen1();
+
+	// Generate a vertex array (VAO) and two vertex buffer objects (VBO).
+	glGenVertexArrays(1, &vao);
+	glGenBuffers(1, &vbo);
+	glGenBuffers(1, &vbot);
+	glGenBuffers(1, &ebo);
+
+	// Bind to the VAO.
+	glBindVertexArray(vao);
+
+	// Bind to the first VBO. We will use it to store the vertices.
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	// Pass in the data.
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * pos.size(),
+		pos.data(), GL_STATIC_DRAW);
+	// Enable vertex attribute 0. 
+	// We will be able to access vertices through it.
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
+
+	// Bind to the first VBO. We will use it to store the vertices.
+	glBindBuffer(GL_ARRAY_BUFFER, vbot);
+	// Pass in the data.
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * texcords.size(),
+		texcords.data(), GL_STATIC_DRAW);
+	// Enable vertex attribute 0. 
+	// We will be able to access vertices through it.
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), 0);
+
+	// Bind to the second VBO. We will use it to store the indices.
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+	// Pass in the data.
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(glm::ivec3) * indices.size(),
+		indices.data(), GL_STATIC_DRAW);
+
+	// Unbind from the VBOs.
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	// Unbind from the VAO.
+	glBindVertexArray(0);
+}
+
+void Building::BuildingGen1() {
 	float minX = posb.x - (length / 2.0);
 	float maxX = posb.x + (length / 2.0);
 	float minY = -10.0f;
@@ -117,24 +161,6 @@ Building::Building(glm::vec3 pos1, float l, float w, float h)
 	pos.push_back(vertices[0]);
 	pos.push_back(vertices[4]);
 
-	// Top face.
-	indices.push_back(glm::ivec3(4, 0, 3));
-	indices.push_back(glm::ivec3(3, 7, 4));
-	//tex
-	texcords.push_back(glm::vec2(0.0f, 1.0f));//0
-	texcords.push_back(glm::vec2(0.0f, 0.0f));//1
-	texcords.push_back(glm::vec2(1.0f, 0.0f));//2
-	texcords.push_back(glm::vec2(1.0f, 0.0f));//2
-	texcords.push_back(glm::vec2(1.0f, 1.0f));//3
-	texcords.push_back(glm::vec2(0.0f, 1.0f));//0
-	
-	pos.push_back(vertices[4]);
-	pos.push_back(vertices[0]);
-	pos.push_back(vertices[3]);
-	pos.push_back(vertices[3]);
-	pos.push_back(vertices[7]);
-	pos.push_back(vertices[4]);
-
 	// Bottom face.
 	indices.push_back(glm::ivec3(1, 5, 6));
 	indices.push_back(glm::ivec3(6, 2, 1));
@@ -153,50 +179,56 @@ Building::Building(glm::vec3 pos1, float l, float w, float h)
 	pos.push_back(vertices[2]);
 	pos.push_back(vertices[1]);
 
-	texture = loadTexture();
+	// Top face.
+	indices.push_back(glm::ivec3(4, 0, 3));
+	indices.push_back(glm::ivec3(3, 7, 4));
+	//tex
+	texcords.push_back(glm::vec2(0.0f, 1.0f));//0
+	texcords.push_back(glm::vec2(0.0f, 0.0f));//1
+	texcords.push_back(glm::vec2(1.0f, 0.0f));//2
+	texcords.push_back(glm::vec2(1.0f, 0.0f));//2
+	texcords.push_back(glm::vec2(1.0f, 1.0f));//3
+	texcords.push_back(glm::vec2(0.0f, 1.0f));//0
 
-	// Generate a vertex array (VAO) and two vertex buffer objects (VBO).
-	glGenVertexArrays(1, &vao);
-	glGenBuffers(1, &vbo);
-	glGenBuffers(1, &vbot);
-	glGenBuffers(1, &ebo);
+	pos.push_back(vertices[4]);
+	pos.push_back(vertices[0]);
+	pos.push_back(vertices[3]);
+	pos.push_back(vertices[3]);
+	pos.push_back(vertices[7]);
+	pos.push_back(vertices[4]);
 
-	// Bind to the VAO.
-	glBindVertexArray(vao);
-
-	// Bind to the first VBO. We will use it to store the vertices.
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	// Pass in the data.
-	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * pos.size(),
-		pos.data(), GL_STATIC_DRAW);
-	// Enable vertex attribute 0. 
-	// We will be able to access vertices through it.
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
-
-	// Bind to the first VBO. We will use it to store the vertices.
-	glBindBuffer(GL_ARRAY_BUFFER, vbot);
-	// Pass in the data.
-	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * texcords.size(),
-		texcords.data(), GL_STATIC_DRAW);
-	// Enable vertex attribute 0. 
-	// We will be able to access vertices through it.
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), 0);
-
-	// Bind to the second VBO. We will use it to store the indices.
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-	// Pass in the data.
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(glm::ivec3) * indices.size(),
-		indices.data(), GL_STATIC_DRAW);
-
-	// Unbind from the VBOs.
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	// Unbind from the VAO.
-	glBindVertexArray(0);
+	texture = loadTexture("NightBuilding8.jpg");
 }
 
-GLuint Building::loadTexture()
+void Building::BuildingGen2() {
+	
+}
+
+void Building::BuildingGen3() {
+
+}
+
+void Building::BuildingGen4() {
+
+}
+
+void Building::BuildingGen5() {
+
+}
+
+void Building::BuildingGen6() {
+
+}
+
+void Building::BuildingGen7() {
+
+}
+
+void Building::BuildingGen8() {
+
+}
+
+GLuint Building::loadTexture(GLchar* image)
 {
 	unsigned int texture1;
 	glGenTextures(1, &texture1);
@@ -208,7 +240,7 @@ GLuint Building::loadTexture()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	// load and generate the texture
 	int width, height, nrChannels;
-	unsigned char *data = stbi_load("Building1.jpg", &width, &height, &nrChannels, 0);
+	unsigned char *data = stbi_load(image, &width, &height, &nrChannels, 0);
 	if (data)
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -242,11 +274,17 @@ void Building::draw(GLuint shaderProgram)
 	glBindVertexArray(vao);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
-
-	// Set point size.
 	// Draw points 
 	//glDrawElements(GL_TRIANGLES,3*indices.size(), GL_UNSIGNED_INT, 0);
 	glDrawArrays(GL_TRIANGLES, 0, pos.size());
+
+	//texture = loadTexture("BlackRoof.jpg");
+	//glBindTexture(GL_TEXTURE_2D, texture);
+	// Draw points 
+	//glDrawElements(GL_TRIANGLES,3*indices.size(), GL_UNSIGNED_INT, 0);
+	//glDrawArrays(GL_TRIANGLES,pos.size() - 6, pos.size());
+	
+	
 	// Unbind from the VAO.
 	glBindVertexArray(0);
 
