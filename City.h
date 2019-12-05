@@ -13,7 +13,7 @@
 #include<vector>
 #include<iostream>
 #include <stdlib.h> 
-#include "building.h"
+#include "Building.h"
 #include "Road.h"
 #include "Ground.h"
 
@@ -34,7 +34,15 @@ public:
 	void addGround(Ground* GroundNode);
 	float RandomFloat(float a, float b);
 	void BuildCity();
+	void GenB0(glm::vec3 pos1);
 	void GenB1(glm::vec3 pos1);
+	void GenB2(glm::vec3 pos1);
+	void GenB3(glm::vec3 pos1);
+	void GenB4(glm::vec3 pos1);
+	void GenB5(glm::vec3 pos1);
+	void GenB6(glm::vec3 pos1);
+	void GenB7(glm::vec3 pos1);
+	void BuildingGen(glm::vec3 pos1);
 	void draw(GLuint shaderProgram);
 	void update();
 };

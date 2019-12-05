@@ -1,5 +1,5 @@
-#ifndef _BUILDING_H_
-#define _BUILDING_H_
+#ifndef _BOXBUILDING_H_
+#define _BOXBUILDING_H_
 
 #ifdef __APPLE__
 #include <OpenGL/gl3.h>
@@ -34,13 +34,16 @@ private:
 
 	GLuint vao, vbo, vbot, ebo;
 	GLuint texture;
+	GLuint textureR;
+	int type;
 
 
 public:
 
-	Building(glm::vec3 pos, float l, float w, float h);
+	Building(glm::vec3 pos, float l, float w, float h, int t);
 	~Building();
 	GLuint loadTexture(GLchar* image);
+	float RandomFloat(float a, float b);
 	void BuildingGen1();
 	void BuildingGen2();
 	void BuildingGen3();

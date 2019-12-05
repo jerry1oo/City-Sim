@@ -56,7 +56,7 @@ GLuint Window::campos;
 GLuint Window::campos1;
 GLuint Window::campos2;
 
-glm::vec3 Window::eye(0, 0, 0); // Camera position.
+glm::vec3 Window::eye(0, 0, -50); // Camera position.
 glm::vec3 Window::center(0, 0, 1); // The point we are looking at.
 glm::vec3 Window::up(0, 1, 0); // The up direction of the camera.
 
@@ -340,8 +340,8 @@ void Window::idleCallback()
 	// Perform any updates as necessary. 
 	//currentObj->update(glm::mat4(1));
 	if (Pswitch) {
-		if (movement > 10) {
-			track->trackposup();
+		if (movement > 1000) {
+			city->update();
 			movement = 0;
 		}
 		movement++;

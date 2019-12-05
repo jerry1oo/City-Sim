@@ -60,13 +60,13 @@
     <ClCompile Include="Road.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="building.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="City.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Ground.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Building.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -119,9 +119,6 @@
     <ClInclude Include="Track.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="building.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Road.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -129,6 +126,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Ground.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Building.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
