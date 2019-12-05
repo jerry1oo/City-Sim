@@ -208,41 +208,41 @@ bool Window::initializeObjects()
 	skybox = new SkyBox(450.0f);
 	//road = new Road(glm::vec3(0.0f,0.0f,0.0f),10,5);
 	//building = new Building(glm::vec3(0.0f, 0.0f, 10.0f), 5.0f, 5.0f, 10.0f);
-	car = new BoundSphere("sphere.obj", 1,skybox->getTex());
-	curve = new Bezier(glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(3.0f, -1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 1.0f), glm::vec3(-1.0f, 0.0f, 1.0f));
-	track = new Track();
+	//car = new BoundSphere("sphere.obj", 1,skybox->getTex());
+	//curve = new Bezier(glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(3.0f, -1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 1.0f), glm::vec3(-1.0f, 0.0f, 1.0f));
+	//track = new Track();
 	// Create a point cloud consisting of cube vertices.
 
-	Light LightSourceObj;
-	LightSourceObj.color = glm::vec3(3*0.1745f, 3*0.01175f, 3*0.01175f);
-	LightSourceObj.ambient = glm::vec3(3*0.1745f, 3*0.01175f, 3*0.01175f);
-	LightSourceObj.diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
-	LightSourceObj.specular = glm::vec3(1.0f, 1.0f, 1.0f);
-	LightSourceObj.position = glm::vec3(0.0f, 10.0f, 30.0f);
-	LightSourceObj.constant = 1.0f;
-	LightSourceObj.linear = 0.022f;
-	LightSourceObj.quadratic = 0.0019f;
+	//Light LightSourceObj;
+	//LightSourceObj.color = glm::vec3(3*0.1745f, 3*0.01175f, 3*0.01175f);
+	//LightSourceObj.ambient = glm::vec3(3*0.1745f, 3*0.01175f, 3*0.01175f);
+	//LightSourceObj.diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
+	//LightSourceObj.specular = glm::vec3(1.0f, 1.0f, 1.0f);
+	//LightSourceObj.position = glm::vec3(0.0f, 10.0f, 30.0f);
+	//LightSourceObj.constant = 1.0f;
+	//LightSourceObj.linear = 0.022f;
+	//LightSourceObj.quadratic = 0.0019f;
 
-	Material MLight;
-	MLight.ambient = glm::vec3(3 * 0.1745f, 3 * 0.01175f, 3 * 0.01175f);
-	MLight.diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
-	MLight.specular = glm::vec3(0.0f, 0.0f, 0.0f);
-	MLight.shininess = 1.0f;
+	//Material MLight;
+	//MLight.ambient = glm::vec3(3 * 0.1745f, 3 * 0.01175f, 3 * 0.01175f);
+	//MLight.diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
+	//MLight.specular = glm::vec3(0.0f, 0.0f, 0.0f);
+	//MLight.shininess = 1.0f;
 
-	Material Mhead;
-	Mhead.ambient = glm::vec3(3 * 0.0215f, 3 * 0.1745f, 3 * 0.0215f);
-	Mhead.diffuse = glm::vec3(3 * 0.07568f, 3 * 0.61424f, 3 * 0.07568f);
-	Mhead.specular = glm::vec3(0 * 0.633f, 3 * 0.727811f, 0 * 0.633f);
-	Mhead.shininess = 3 * 0.6f;
-	
-	Material Meye;
-	Meye.ambient = glm::vec3(3 * 0.05375f, 3 * 0.05f, 3 * 0.06625f);
-	Meye.diffuse = glm::vec3(3 * 0.18275f, 3 * 0.17f, 3 * 0.22525f);
-	Meye.specular = glm::vec3(0 * 0.332741f, 0 * 0.328634f, 0 * 0.346435f);
-	Meye.shininess = 0 * 0.3f;
+	//Material Mhead;
+	//Mhead.ambient = glm::vec3(3 * 0.0215f, 3 * 0.1745f, 3 * 0.0215f);
+	//Mhead.diffuse = glm::vec3(3 * 0.07568f, 3 * 0.61424f, 3 * 0.07568f);
+	//Mhead.specular = glm::vec3(0 * 0.633f, 3 * 0.727811f, 0 * 0.633f);
+	//Mhead.shininess = 3 * 0.6f;
+	//
+	//Material Meye;
+	//Meye.ambient = glm::vec3(3 * 0.05375f, 3 * 0.05f, 3 * 0.06625f);
+	//Meye.diffuse = glm::vec3(3 * 0.18275f, 3 * 0.17f, 3 * 0.22525f);
+	//Meye.specular = glm::vec3(0 * 0.332741f, 0 * 0.328634f, 0 * 0.346435f);
+	//Meye.shininess = 0 * 0.3f;
 
 
-	LightSource = new Lighting("sphere.obj", 1, MLight, LightSourceObj, modelLoc);
+	//LightSource = new Lighting("sphere.obj", 1, MLight, LightSourceObj, modelLoc);
 	// Set cube to be the first to display
 	//currentObj = Satellite;
 
@@ -494,44 +494,44 @@ void Window::displayCallback(GLFWwindow* window)
 	glUniformMatrix4fv(campos2, 1, GL_FALSE, glm::value_ptr(eye));
 	//car->draw(program2, glm::scale(glm::translate(glm::mat4(1), track->getpos()), glm::vec3(1.0f)), false, false, PL, counter);
 
-	glUseProgram(program);
-	Light light = LightSource->getLight();
-	Material lightmat = LightSource->getMaterial();
-	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-	
-	
-	glUniform3fv(lightLoc, 1, glm::value_ptr(light.position));
-	
-	glUniform3fv(lightColLoc, 1, glm::value_ptr(light.color));
-	glUniform3fv(lightPosLoc, 1, glm::value_ptr(light.position));
+	//glUseProgram(program);
+	//Light light = LightSource->getLight();
+	//Material lightmat = LightSource->getMaterial();
+	//glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+	//glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+	//
+	//
+	//glUniform3fv(lightLoc, 1, glm::value_ptr(light.position));
+	//
+	//glUniform3fv(lightColLoc, 1, glm::value_ptr(light.color));
+	//glUniform3fv(lightPosLoc, 1, glm::value_ptr(light.position));
 
-	glUniform3fv(lightAmbi, 1, glm::value_ptr(light.ambient));
-	glUniform3fv(lightDiff, 1, glm::value_ptr(light.diffuse));
-	glUniform3fv(lightSpec, 1, glm::value_ptr(light.specular));
+	//glUniform3fv(lightAmbi, 1, glm::value_ptr(light.ambient));
+	//glUniform3fv(lightDiff, 1, glm::value_ptr(light.diffuse));
+	//glUniform3fv(lightSpec, 1, glm::value_ptr(light.specular));
 
-	glUniform1f(lightConst, light.constant);
-	glUniform1f(lightlin, light.linear);
-	glUniform1f(lightquad, light.quadratic);
+	//glUniform1f(lightConst, light.constant);
+	//glUniform1f(lightlin, light.linear);
+	//glUniform1f(lightquad, light.quadratic);
 
-	glUniform1i(NormCordLoc, NormCord);
+	//glUniform1i(NormCordLoc, NormCord);
 
-	
+	//
 
-	// Render the object.
-	//currentObj->draw(program,glm::scale(glm::translate(glm::mat4(1), glm::vec3(0,0,10)), glm::vec3(1.0f)), Bswitch, Fswitch,PL,counter);
-	counter = counter / 10;
-	glm::mat4 model = LightSource->getModel();
-	glm::vec3 color = LightSource->getColor();
-	glUniform3fv(colorLoc, 1, glm::value_ptr(color));
-	glUniform3fv(lightAmbi, 1, glm::value_ptr(glm::vec3(1.0f)));
-	glUniform3fv(lightDiff, 1, glm::value_ptr(glm::vec3(1.0f)));
-	glUniform3fv(lightSpec, 1, glm::value_ptr(glm::vec3(1.0f)));
-	glUniform3fv(MatAmbi, 1, glm::value_ptr(lightmat.ambient));
-	glUniform3fv(MatDiff, 1, glm::value_ptr(lightmat.diffuse));
-	glUniform3fv(Matspec, 1, glm::value_ptr(lightmat.specular));
-	glUniform1f(Matshine, lightmat.shininess);
-	glUniform1i(NormCordLoc, NormCord);
+	//// Render the object.
+	////currentObj->draw(program,glm::scale(glm::translate(glm::mat4(1), glm::vec3(0,0,10)), glm::vec3(1.0f)), Bswitch, Fswitch,PL,counter);
+	//counter = counter / 10;
+	//glm::mat4 model = LightSource->getModel();
+	//glm::vec3 color = LightSource->getColor();
+	//glUniform3fv(colorLoc, 1, glm::value_ptr(color));
+	//glUniform3fv(lightAmbi, 1, glm::value_ptr(glm::vec3(1.0f)));
+	//glUniform3fv(lightDiff, 1, glm::value_ptr(glm::vec3(1.0f)));
+	//glUniform3fv(lightSpec, 1, glm::value_ptr(glm::vec3(1.0f)));
+	//glUniform3fv(MatAmbi, 1, glm::value_ptr(lightmat.ambient));
+	//glUniform3fv(MatDiff, 1, glm::value_ptr(lightmat.diffuse));
+	//glUniform3fv(Matspec, 1, glm::value_ptr(lightmat.specular));
+	//glUniform1f(Matshine, lightmat.shininess);
+	//glUniform1i(NormCordLoc, NormCord);
 
 	glUseProgram(program1);
 	// Specify the values of the uniform variables we are going to use.
@@ -613,36 +613,36 @@ void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, 
 			break;
 		case GLFW_KEY_LEFT:
 			std::cout << "left" << std::endl;
-			track->cpdec();
+			//track->cpdec();
 			break;
 		case GLFW_KEY_X:
 			if (mods == GLFW_MOD_SHIFT) {
 				std::cout << "-x" << std::endl;
-				track->decAxis('X');
+				//track->decAxis('X');
 			}
 			else {
 				std::cout << "x" << std::endl;
-				track->incAxis('x');
+				//track->incAxis('x');
 			}
 			break;
 		case GLFW_KEY_Y:
 			if (mods == GLFW_MOD_SHIFT) {
 				std::cout << "-y" << std::endl;
-				track->decAxis('Y');
+				//track->decAxis('Y');
 			}
 			else {
 				std::cout << "y" << std::endl;
-				track->incAxis('y');
+				//track->incAxis('y');
 			}
 			break;
 		case GLFW_KEY_Z:
 			if (mods == GLFW_MOD_SHIFT) {
 				std::cout << "-z" << std::endl;
-				track->decAxis('Z');
+				//track->decAxis('Z');
 			}
 			else {
 				std::cout << "z" << std::endl;
-				track->incAxis('z');
+				//track->incAxis('z');
 			}
 			break;
 		case GLFW_KEY_F3:
