@@ -32,6 +32,9 @@ private:
 	float width;
 	float height;
 
+	GLchar* Fside;
+	GLchar* Ftop;
+
 	GLuint vao, vbo, vbot, ebo;
 	GLuint texture;
 	GLuint textureR;
@@ -40,19 +43,17 @@ private:
 
 public:
 
-	Building(glm::vec3 pos, float l, float w, float h, int t);
+	Building(glm::vec3 pos, float l, float w, float h, int t, GLchar* Tside, GLchar* Ttop);
 	~Building();
 	GLuint loadTexture(GLchar* image);
 	float RandomFloat(float a, float b);
+
 	void BuildingGen1();
 	void BuildingGen2();
 	void BuildingGen3();
 	void BuildingGen4();
 	void BuildingGen5();
-	void BuildingGen6();
-	void BuildingGen7();
-	void BuildingGen8();
-	void BuildingGen9();
+
 	void draw(GLuint shaderProgram);
 	void update();
 };

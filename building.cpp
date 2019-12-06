@@ -1,6 +1,10 @@
 #include "Building.h"
-Building::Building(glm::vec3 pos1, float l, float w, float h, int t)
+Building::Building(glm::vec3 pos1, float l, float w, float h, int t, GLchar* Tside, GLchar* Ttop)
 {
+
+	//"NightBuilding8.jpg"
+	//"BlackRoof.jpg"
+
 	// Model matrix. Since the original size of the cube is 2, in order to
 	// have a cube of some size, we need to scale the cube by size / 2.
 	model = glm::mat4(1.0f);
@@ -11,6 +15,9 @@ Building::Building(glm::vec3 pos1, float l, float w, float h, int t)
 	height = h;
 	posb = pos1;
 	type = t;
+	Fside = Tside;
+	Ftop = Ttop;
+
 	if (type == 0) {
 		BuildingGen1();
 	}
@@ -213,8 +220,8 @@ void Building::BuildingGen1() {//Rectangle
 	pos.push_back(vertices[7]);
 	pos.push_back(vertices[4]);
 
-	texture = loadTexture("NightBuilding8.jpg");
-	textureR = loadTexture("BlackRoof.jpg");
+	texture = loadTexture(Fside);
+	textureR = loadTexture(Ftop);
 }
 
 float Building::RandomFloat(float a, float b) {
@@ -410,8 +417,8 @@ void Building::BuildingGen2() {//Rectangle with tip
 	pos.push_back(vertices[8]);
 
 
-	texture = loadTexture("NightBuilding8.jpg");
-	textureR = loadTexture("BlackRoof.jpg");
+	texture = loadTexture(Fside);
+	textureR = loadTexture(Ftop);
 }
 
 void Building::BuildingGen3() {
@@ -600,8 +607,8 @@ void Building::BuildingGen3() {
 	pos.push_back(vertices[8]);
 
 
-	texture = loadTexture("NightBuilding8.jpg");
-	textureR = loadTexture("BlackRoof.jpg");
+	texture = loadTexture(Fside);
+	textureR = loadTexture(Ftop);
 }
 
 void Building::BuildingGen4() {
@@ -694,8 +701,8 @@ void Building::BuildingGen4() {
 	pos.push_back(vertices[4]);
 
 
-	texture = loadTexture("NightBuilding8.jpg");
-	textureR = loadTexture("BlackRoof.jpg");
+	texture = loadTexture(Fside);
+	textureR = loadTexture(Ftop);
 }
 
 void Building::BuildingGen5() {
@@ -788,21 +795,11 @@ void Building::BuildingGen5() {
 	pos.push_back(vertices[4]);
 
 
-	texture = loadTexture("NightBuilding8.jpg");
-	textureR = loadTexture("BlackRoof.jpg");
+	texture = loadTexture(Fside);
+	textureR = loadTexture(Ftop);
 }
 
-void Building::BuildingGen6() {
 
-}
-
-void Building::BuildingGen7() {
-
-}
-
-void Building::BuildingGen8() {
-
-}
 
 GLuint Building::loadTexture(GLchar* image)
 {

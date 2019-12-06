@@ -203,7 +203,7 @@ bool Window::initializeObjects()
 {
 	// Create a cube of size 5.
 	city = new City();
-	city->BuildCity();
+	//city->BuildCity();
 	//ground = new Ground(glm::vec3(0.0f, -1.0f, 0.0f), 400, 400, false);
 	skybox = new SkyBox(450.0f);
 	//road = new Road(glm::vec3(0.0f,0.0f,0.0f),10,5);
