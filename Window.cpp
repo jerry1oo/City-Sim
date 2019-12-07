@@ -11,9 +11,11 @@ Triangle * Window::bear;
 Triangle * Window::bunny;
 Triangle * Window::dragon;
 SkyBox * Window::skybox;
-BoundSphere * Window::car;
+glm::mat4 Window::taximod = glm::mat4(1);
+//BoundSphere * Window::car;
 Bezier * Window::curve;
 Track * Window::track;
+Car * Window::taxi;
 int Window::movement = 0;
 
 int Window::frames = 4;
@@ -38,9 +40,14 @@ double Window::my = 0;
 bool Window::LDown = false;
 bool Window::NormCord = true;
 bool Window::Bswitch = false;
-bool Window::Fswitch = true;
+bool Window::Fswitch = false;
 bool Window::Dswitch = false;
+
 bool Window::Pswitch = false;
+bool Window::Tswitch = false;
+bool Window::Gswitch = false;
+bool Window::Cswitch = false;
+bool Window::Lswitch = false;
 
 bool Window::Down1 = true;
 bool Window::Down2 = false;
@@ -156,46 +163,16 @@ bool Window::initializeProgram() {
 	projectionLocBuilding = glGetUniformLocation(BuildingShader, "projection");
 	viewLocBuilding = glGetUniformLocation(BuildingShader, "view");
 
-	glUseProgram(program2);
-	projectionLoc2 = glGetUniformLocation(program2, "projection");
-	viewLoc2 = glGetUniformLocation(program2, "view");
-	campos2 = glGetUniformLocation(program2, "cameraPos");
+	//glUseProgram(program2);
+	//projectionLoc2 = glGetUniformLocation(program2, "projection");
+	//viewLoc2 = glGetUniformLocation(program2, "view");
+	//campos2 = glGetUniformLocation(program2, "cameraPos");
 	
 	glUseProgram(program1);
 	projectionLoc1 = glGetUniformLocation(program1, "projection");
 	viewLoc1 = glGetUniformLocation(program1, "view");
 
-	glUseProgram(Beziershader);
-	projectionLoc3 = glGetUniformLocation(Beziershader, "projection");
-	viewLoc3 = glGetUniformLocation(Beziershader, "view");
 
-	// Activate the shader program.
-	glUseProgram(program);
-	// Get the locations of uniform variables.
-	projectionLoc = glGetUniformLocation(program, "projection");
-	viewLoc = glGetUniformLocation(program, "view");
-	modelLoc = glGetUniformLocation(program, "model");
-	colorLoc = glGetUniformLocation(program, "color");
-	lightLoc = glGetUniformLocation(program, "lights");
-	
-
-	lightColLoc = glGetUniformLocation(program, "light.color");
-	lightPosLoc = glGetUniformLocation(program, "light.position");
-	lightConst = glGetUniformLocation(program, "light.constant");
-	lightlin = glGetUniformLocation(program, "light.linear");
-	lightquad = glGetUniformLocation(program, "light.quadratic");
-	lightAmbi = glGetUniformLocation(program, "light.ambient");
-	lightDiff = glGetUniformLocation(program, "light.diffuse");
-	lightSpec = glGetUniformLocation(program, "light.specular");
-
-	MatAmbi = glGetUniformLocation(program, "material.ambient");
-	MatDiff = glGetUniformLocation(program, "material.diffuse");
-	Matspec = glGetUniformLocation(program, "material.specular");
-	Matshine = glGetUniformLocation(program, "material.shininess");
-
-
-	
-	NormCordLoc = glGetUniformLocation(program, "Normcord");
 	return true;
 }
 
@@ -203,49 +180,9 @@ bool Window::initializeObjects()
 {
 	// Create a cube of size 5.
 	city = new City();
-	//city->BuildCity();
-	//ground = new Ground(glm::vec3(0.0f, -1.0f, 0.0f), 400, 400, false);
+	city->BuildCity(Gswitch,Tswitch);
+	//taxi = new Car(glm::vec3(0.0f + 20.0f * 0, 2.5f, -1 * 5.0f - 5.0f * 1), 1.25, 2, 1.25, "BlackRoof.jpg", "BlackRoof.jpg");
 	skybox = new SkyBox(450.0f);
-	//road = new Road(glm::vec3(0.0f,0.0f,0.0f),10,5);
-	//building = new Building(glm::vec3(0.0f, 0.0f, 10.0f), 5.0f, 5.0f, 10.0f);
-	//car = new BoundSphere("sphere.obj", 1,skybox->getTex());
-	//curve = new Bezier(glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(3.0f, -1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 1.0f), glm::vec3(-1.0f, 0.0f, 1.0f));
-	//track = new Track();
-	// Create a point cloud consisting of cube vertices.
-
-	//Light LightSourceObj;
-	//LightSourceObj.color = glm::vec3(3*0.1745f, 3*0.01175f, 3*0.01175f);
-	//LightSourceObj.ambient = glm::vec3(3*0.1745f, 3*0.01175f, 3*0.01175f);
-	//LightSourceObj.diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
-	//LightSourceObj.specular = glm::vec3(1.0f, 1.0f, 1.0f);
-	//LightSourceObj.position = glm::vec3(0.0f, 10.0f, 30.0f);
-	//LightSourceObj.constant = 1.0f;
-	//LightSourceObj.linear = 0.022f;
-	//LightSourceObj.quadratic = 0.0019f;
-
-	//Material MLight;
-	//MLight.ambient = glm::vec3(3 * 0.1745f, 3 * 0.01175f, 3 * 0.01175f);
-	//MLight.diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
-	//MLight.specular = glm::vec3(0.0f, 0.0f, 0.0f);
-	//MLight.shininess = 1.0f;
-
-	//Material Mhead;
-	//Mhead.ambient = glm::vec3(3 * 0.0215f, 3 * 0.1745f, 3 * 0.0215f);
-	//Mhead.diffuse = glm::vec3(3 * 0.07568f, 3 * 0.61424f, 3 * 0.07568f);
-	//Mhead.specular = glm::vec3(0 * 0.633f, 3 * 0.727811f, 0 * 0.633f);
-	//Mhead.shininess = 3 * 0.6f;
-	//
-	//Material Meye;
-	//Meye.ambient = glm::vec3(3 * 0.05375f, 3 * 0.05f, 3 * 0.06625f);
-	//Meye.diffuse = glm::vec3(3 * 0.18275f, 3 * 0.17f, 3 * 0.22525f);
-	//Meye.specular = glm::vec3(0 * 0.332741f, 0 * 0.328634f, 0 * 0.346435f);
-	//Meye.shininess = 0 * 0.3f;
-
-
-	//LightSource = new Lighting("sphere.obj", 1, MLight, LightSourceObj, modelLoc);
-	// Set cube to be the first to display
-	//currentObj = Satellite;
-
 	return true;
 }
 
@@ -341,7 +278,12 @@ void Window::idleCallback()
 	//currentObj->update(glm::mat4(1));
 	if (Pswitch) {
 		if (movement > 1000) {
-			city->update();
+			std::cout << "Pswitch: " << Pswitch << std::endl;
+			std::cout << "Cswitch: " << Cswitch << std::endl;
+			std::cout << "Tswitch: " << Tswitch << std::endl;
+			std::cout << "Gswitch: " << Gswitch << std::endl;
+			std::cout << "Lswitch: " << Lswitch << std::endl;
+			city->update(Gswitch, Tswitch, Cswitch, Lswitch);
 			movement = 0;
 		}
 		movement++;
@@ -475,6 +417,7 @@ void Window::displayCallback(GLFWwindow* window)
 	glUniformMatrix4fv(projectionLocRoad, 1, GL_FALSE, glm::value_ptr(projection));
 	glUniformMatrix4fv(viewLocRoad, 1, GL_FALSE, glm::value_ptr(view));
 	city->draw(RoadShader);
+	//taxi->draw(RoadShader, taximod);
 	//ground->draw(RoadShader);
 
 	/*glUseProgram(BuildingShader);
@@ -482,16 +425,16 @@ void Window::displayCallback(GLFWwindow* window)
 	glUniformMatrix4fv(viewLocBuilding, 1, GL_FALSE, glm::value_ptr(view));
 	building->draw(BuildingShader);*/
 
-	glUseProgram(Beziershader);
+	/*glUseProgram(Beziershader);
 	glUniformMatrix4fv(projectionLoc3, 1, GL_FALSE, glm::value_ptr(projection));
-	glUniformMatrix4fv(viewLoc3, 1, GL_FALSE, glm::value_ptr(view));
+	glUniformMatrix4fv(viewLoc3, 1, GL_FALSE, glm::value_ptr(view));*/
 	//track->draw(Beziershader);
 
-	glUseProgram(program2);
-	// Specify the values of the uniform variables we are going to use.
-	glUniformMatrix4fv(projectionLoc2, 1, GL_FALSE, glm::value_ptr(projection));
-	glUniformMatrix4fv(viewLoc2, 1, GL_FALSE, glm::value_ptr(view));
-	glUniformMatrix4fv(campos2, 1, GL_FALSE, glm::value_ptr(eye));
+	//glUseProgram(program2);
+	//// Specify the values of the uniform variables we are going to use.
+	//glUniformMatrix4fv(projectionLoc2, 1, GL_FALSE, glm::value_ptr(projection));
+	//glUniformMatrix4fv(viewLoc2, 1, GL_FALSE, glm::value_ptr(view));
+	//glUniformMatrix4fv(campos2, 1, GL_FALSE, glm::value_ptr(eye));
 	//car->draw(program2, glm::scale(glm::translate(glm::mat4(1), track->getpos()), glm::vec3(1.0f)), false, false, PL, counter);
 
 	//glUseProgram(program);
@@ -545,38 +488,38 @@ void Window::displayCallback(GLFWwindow* window)
 	glfwPollEvents();
 	// Swap buffers.
 	glfwSwapBuffers(window);
-	//int n = 5;
+	//int n = 20;
 	//int i = 0;
+
 	//while (true) {
-	//	if (blur) {
+	//	if (blur == true && Bswitch == true) {
+	//		glUseProgram(RoadShader);
+	//		glUniformMatrix4fv(projectionLocRoad, 1, GL_FALSE, glm::value_ptr(projection));
+	//		glUniformMatrix4fv(viewLocRoad, 1, GL_FALSE, glm::value_ptr(view));
+	//		city->draw(RoadShader);
 
-
-	//		if (framescounter == 0) {
-	//			glAccum(GL_LOAD, 1.0 / frames);
-	//		}
-	//		else {
-	//			glAccum(GL_ACCUM, 1.0 / frames);
-	//		}
+	//		if (i == 0)
+	//			glAccum(GL_LOAD, 1.0 / n);
+	//		else
+	//			glAccum(GL_ACCUM, 1.0 / n);
 
 	//		i++;
 
-	//		if (framescounter >= frames) {
-	//			framescounter = 0;
+	//		if (i >= n) {
+	//			i = 0;
+	//			//blur = false;
 	//			glAccum(GL_RETURN, 1.0);
-	//			// Gets events, including input such as keyboard and mouse or window resizing.
 	//			glfwPollEvents();
-	//			// Swap buffers.
+	//			// Swap buffers
 	//			glfwSwapBuffers(window);
 	//		}
+
 	//	}
-	//	else {
+
+	//	if (blur == false || Bswitch == false) {
 	//		break;
 	//	}
 	//}
-
-
-
-
 }
 
 
@@ -600,15 +543,19 @@ void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, 
 		//	currentObj = cube;
 		//	break;
 		case GLFW_KEY_W:
+			blur = true;
 			dz = 2;
 			break;
 		case GLFW_KEY_A:
+			blur = true;
 			dx = -2;
 			break;
 		case GLFW_KEY_S:
+			blur = true;
 			dz = -2;
 			break;
 		case GLFW_KEY_D:
+			blur = true;
 			dx = 2;
 			break;
 		case GLFW_KEY_LEFT:
@@ -699,9 +646,47 @@ void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, 
 			// change size
 			if (Fswitch == true) {
 				Fswitch = false;
+				//eye = taxi->posb;
+				//Window::view = glm::lookAt(Window::eye, Window::center, Window::up);
 			}
 			else {
 				Fswitch = true;
+			}
+			break;
+		case GLFW_KEY_T:
+			// change size
+			if (Tswitch == true) {
+				Tswitch = false;
+			}
+			else {
+				Tswitch = true;
+			}
+			break;
+		case GLFW_KEY_G:
+			// change size
+			if (Gswitch == true) {
+				Gswitch = false;
+			}
+			else {
+				Gswitch = true;
+			}
+			break;
+		case GLFW_KEY_C:
+			// change size
+			if (Cswitch == true) {
+				Cswitch = false;
+			}
+			else {
+				Cswitch = true;
+			}
+			break;
+		case GLFW_KEY_L:
+			// change size
+			if (Lswitch == true) {
+				Lswitch = false;
+			}
+			else {
+				Lswitch = true;
 			}
 			break;
 		case GLFW_KEY_N:
@@ -713,6 +698,7 @@ void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, 
 				NormCord = true;
 			}
 			break;
+
 		default:
 			break;
 		}
@@ -721,8 +707,28 @@ void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, 
 		glm::vec3 strafe(view[0][0], view[1][0], view[2][0]);
 		float speed = 0.20f;
 		eye += (-1 * dz*forward + dx * strafe) * speed;
+		if (Fswitch) {			
+			eye.y = -8.0f;
+			//taxi = new Car(eye, 1.25, 2, 1.25, "BlackRoof.jpg", "BlackRoof.jpg");
+		}
 		Window::view = glm::lookAt(Window::eye, Window::center, Window::up);
 
+	}
+	else if (action == GLFW_RELEASE) {
+		switch (key) {
+			case GLFW_KEY_W:
+				blur = false;
+				break;
+			case GLFW_KEY_A:
+				blur = false;
+				break;
+			case GLFW_KEY_S:
+				blur = false;
+				break;
+			case GLFW_KEY_D:
+				blur = false;
+				break;
+		}
 	}
 }
 
@@ -738,6 +744,8 @@ void Window::cursorPos(GLFWwindow* window, double x, double y)
 			glm::vec3 rotAxis = glm::cross(lastPos2, curPos2);
 			float rotAngle = vel2*30;
 			
+			//glm::rotate(taximod, glm::radians(rotAngle), glm::vec3(1.0f, 0.0, 0.0));
+			//taxi->spin(rotAngle);
 			glm::mat4 TM = glm::translate(glm::mat4(1.0f),Window::eye);
 			glm::mat4 TMI = glm::inverse(TM);
 			glm::vec4 dirv = glm::vec4(center - eye, 0);			
@@ -763,8 +771,8 @@ void Window::mouseClick(GLFWwindow* window, int button, int action, int mods) {
 	if (action == GLFW_PRESS) {
 		switch (button) {
 			case GLFW_MOUSE_BUTTON_LEFT:
-				glfwGetCursorPos(window, &mx, &my);
 				blur = true;
+				glfwGetCursorPos(window, &mx, &my);
 				LDown = true;
 				break;
 		}

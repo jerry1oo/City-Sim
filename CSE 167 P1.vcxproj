@@ -103,6 +103,7 @@
     <ClCompile Include="Bezier.cpp" />
     <ClCompile Include="BoundSphere.cpp" />
     <ClCompile Include="Building.cpp" />
+    <ClCompile Include="Car.cpp" />
     <ClCompile Include="City.cpp" />
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="Geometry.cpp" />
@@ -123,6 +124,7 @@
     <ClInclude Include="BoundSphere.h" />
     <ClInclude Include="Bezier.h" />
     <ClInclude Include="Building.h" />
+    <ClInclude Include="Car.h" />
     <ClInclude Include="City.h" />
     <ClInclude Include="Cube.h" />
     <ClInclude Include="Geometry.h" />

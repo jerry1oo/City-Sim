@@ -26,18 +26,30 @@ public:
 
 	int SF;
 	bool first = true;
+	bool Tswitch;
+	bool Gswitch;
+	bool lag;
 
 	glm::mat4 Model;
-	std::list<Building*> Buildings;
-	std::list<Road*> Roads;
+	std::vector<Building*> Buildings;
+	Road* SF_L;
+	std::vector<std::vector<Building*>> B_Blocks;
+	std::vector<Road*> Roads;
+	std::vector<std::vector<Road*>> R_Blocks;
 	std::list<Ground*> Grounds;
 
 
+	void addBuilding1(std::vector<Building*> BuildingNode);
+	void addRoad1(std::vector<Road*> RoadNode);
 	void addBuilding(Building* BuildingNode);
 	void addRoad(Road* RoadNode);
 	void addGround(Ground* GroundNode);
 	float RandomFloat(float a, float b);
-	void BuildCity();
+	void BuildCity(bool bg, bool tg);
+	void BuildCity1(bool bg, bool tg);
+	void BuildCity2(bool bg, bool tg);
+	void BuildRE(bool bg, bool tg, bool l);
+	
 	void GenB0(glm::vec3 pos1, GLchar* fs, GLchar* ft);
 	void GenB1(glm::vec3 pos1, GLchar* fs, GLchar* ft);
 	void GenB2(glm::vec3 pos1, GLchar* fs, GLchar* ft);
@@ -54,12 +66,29 @@ public:
 	void GenB12(glm::vec3 pos1, GLchar* fs, GLchar* ft);
 	void GenB13(glm::vec3 pos1, GLchar* fs, GLchar* ft);
 
+	void GenB0_1(glm::vec3 pos1, GLchar* fs, GLchar* ft);
+	void GenB1_1(glm::vec3 pos1, GLchar* fs, GLchar* ft);
+	void GenB2_1(glm::vec3 pos1, GLchar* fs, GLchar* ft);
+	void GenB3_1(glm::vec3 pos1, GLchar* fs, GLchar* ft);
+	void GenB4_1(glm::vec3 pos1, GLchar* fs, GLchar* ft);
+	void GenB5_1(glm::vec3 pos1, GLchar* fs, GLchar* ft);
+	void GenB6_1(glm::vec3 pos1, GLchar* fs, GLchar* ft);
+	void GenB7_1(glm::vec3 pos1, GLchar* fs, GLchar* ft);
+
+	void GenB8_1(glm::vec3 pos1, GLchar* fs, GLchar* ft);
+	void GenB9_1(glm::vec3 pos1, GLchar* fs, GLchar* ft);
+	void GenB10_1(glm::vec3 pos1, GLchar* fs, GLchar* ft);
+	void GenB11_1(glm::vec3 pos1, GLchar* fs, GLchar* ft);
+	void GenB12_1(glm::vec3 pos1, GLchar* fs, GLchar* ft);
+	void GenB13_1(glm::vec3 pos1, GLchar* fs, GLchar* ft);
+
 	void GenRoad1();
 	void GenRoad2();
 
 	void BuildingGen(glm::vec3 pos1, GLchar* fs, GLchar* ft);
+	void BuildingGen1(glm::vec3 pos1, GLchar* fs, GLchar* ft);
 	void draw(GLuint shaderProgram);
-	void update();
+	void update(bool bg, bool tg, bool cg, bool l);
 };
 
 #endif

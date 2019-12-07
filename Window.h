@@ -33,6 +33,7 @@
 //#include "building.h"
 #include "City.h"
 //#include "Ground.h"
+#include "Car.h"
 
 class Window
 {
@@ -40,7 +41,11 @@ public:
 	static int frames;
 	static int framescounter;
 	static bool blur;
+
+	static glm::mat4 taximod;
+	static glm::mat4 taxitran;
 	
+	//static bool First;
 
 	static int width;
 	static int height;
@@ -51,12 +56,13 @@ public:
 	static Triangle * bunny;
 	static Triangle * dragon;
 	static SkyBox * skybox;
-	static BoundSphere * car;
+	//static BoundSphere * car;
 	static Bezier * curve;
 	static Track * track;
 	//static Road * road;
 	//static Building * building;
 	static City * city;
+	static Car * taxi;
 	//static Ground * ground;
 
 
@@ -70,7 +76,12 @@ public:
 	static bool Bswitch;
 	static bool Fswitch;
 	static bool Dswitch;
+
 	static bool Pswitch;
+	static bool Tswitch;
+	static bool Gswitch;
+	static bool Cswitch;
+	static bool Lswitch;
 
 	static bool Down1;
 	static bool Down2;
