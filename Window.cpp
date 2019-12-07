@@ -22,6 +22,8 @@ int Window::frames = 4;
 int Window::framescounter = 10;
 bool Window::blur = false;
 
+irrklang::ISoundEngine*  Window::SoundEngine = irrklang::createIrrKlangDevice();
+
 
 //Road * Window::road;
 //Building * Window::building;
@@ -141,6 +143,7 @@ bool Window::initializeProgram() {
 	RoadShader = LoadShaders("shaders/Road.vert", "shaders/Road.frag");
 	BuildingShader = LoadShaders("shaders/Building.vert", "shaders/Building.frag");
 
+	SoundEngine->play2D("CityBack.mp3", GL_TRUE);
 	// Check the shader program.
 	if (!program)
 	{

@@ -34,6 +34,7 @@
 #include "City.h"
 //#include "Ground.h"
 #include "Car.h"
+#include <irrKlang.h>
 
 class Window
 {
@@ -44,6 +45,7 @@ public:
 
 	static glm::mat4 taximod;
 	static glm::mat4 taxitran;
+	static irrklang::ISoundEngine*  SoundEngine;
 	
 	//static bool First;
 
