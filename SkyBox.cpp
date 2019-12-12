@@ -52,12 +52,26 @@ SkyBox::SkyBox(float size)
 	indices.push_back(glm::ivec3(6, 5, 1));
 	indices.push_back(glm::ivec3(1, 2, 6));
 
-	faces.push_back("right.jpg");
+	/*faces.push_back("right.jpg");
 	faces.push_back("left.jpg");
 	faces.push_back("top.jpg");
 	faces.push_back("bottom.jpg");
 	faces.push_back("front.jpg");
-	faces.push_back("back.jpg");
+	faces.push_back("back.jpg");*/
+
+	/*faces.push_back("Imcity_rt.jpg");
+	faces.push_back("Imcity_lf.jpg");
+	faces.push_back("Imcity_up.jpg");
+	faces.push_back("Imcity_dn.jpg");
+	faces.push_back("Imcity_ft.jpg");
+	faces.push_back("Imcity_bk.jpg");*/
+
+	faces.push_back("posx.jpg");
+	faces.push_back("negx.jpg");
+	faces.push_back("posy.jpg");
+	faces.push_back("negy.jpg");
+	faces.push_back("posz.jpg");
+	faces.push_back("negz.jpg");
 	
 	cubemapTexture = loadCubemap(faces);
 

@@ -10,6 +10,8 @@ void setup_callbacks(GLFWwindow* window)
 {
 	// Set the error callback.
 	glfwSetErrorCallback(error_callback);
+	// Set FBO
+	glfwSetFramebufferSizeCallback(window, Window::FBOcallback);
 	// Set the key callback.
 	glfwSetKeyCallback(window, Window::keyCallback);
 	// Set the Mouse Scroll

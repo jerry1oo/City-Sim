@@ -7,7 +7,7 @@ Car::Car(glm::vec3 pos1, float l, float w, float h, GLchar* Tside, GLchar* Ttop)
 
 	// Model matrix. Since the original size of the cube is 2, in order to
 	// have a cube of some size, we need to scale the cube by size / 2.
-	model = glm::mat4(1.0f);
+	//model = glm::mat4(1.0f);
 	color = glm::vec3(1.0f, 1.0f, 0.0f);
 	//texture = t;
 	length = l;
@@ -252,7 +252,7 @@ Car::~Car()
 
 void Car::draw(GLuint shaderProgram, glm::mat4 C)
 {
-	//model = C;
+	model = C;
 	colorLoc = glGetUniformLocation(shaderProgram, "color");
 	glUniform3fv(colorLoc, 1, glm::value_ptr(color));
 	modelLoc = glGetUniformLocation(shaderProgram, "model");

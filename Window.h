@@ -43,15 +43,25 @@ public:
 	static int framescounter;
 	static bool blur;
 
+	static unsigned int FBO;
+	static unsigned int texture;
+	static unsigned int rbo;
+
 	static glm::mat4 taximod;
 	static glm::mat4 taxitran;
 	static irrklang::ISoundEngine*  SoundEngine;
+	static irrklang::ISoundEngine*  SoundEngineB;
+	static irrklang::ISoundEngine*  SoundEngineT;
 	
 	//static bool First;
 
 	static int width;
 	static int height;
 	static int movement;
+	static int sound1;
+	static irrklang::ISound* music;
+	static irrklang::ISound* back;
+	static irrklang::ISound* TiredSound;
 	static const char* windowTitle;
 	static Cube* cube;
 	static Triangle * bear;
@@ -67,6 +77,10 @@ public:
 	static Car * taxi;
 	//static Ground * ground;
 
+	static float yaw;
+	static float pitch;
+	static float deltaTime;
+	static float lastFrame;
 
 	static glm::vec3 CullCenter;
 	static double CullRadius;
@@ -75,6 +89,7 @@ public:
 	static Lighting * LightSource;
 	static double mx, my;
 	static bool LDown;
+	static bool firstMouse;
 	static bool Bswitch;
 	static bool Fswitch;
 	static bool Dswitch;
@@ -85,6 +100,8 @@ public:
 	static bool Cswitch;
 	static bool Lswitch;
 
+	static bool Eswitch;
+
 	static bool Down1;
 	static bool Down2;
 	static bool Down3;
@@ -94,8 +111,6 @@ public:
 	static double fov;
 	static glm::mat4 view;
 	static glm::vec3 eye, center, up;
-
-
 	
 
 	static glm::vec3 fc, ftl, ftr, fbl, fbr, nc, ntl, ntr, nbl, nbr, a, normalRight, right;
@@ -105,6 +120,8 @@ public:
 
 	static GLuint RoadShader, projectionLocRoad, viewLocRoad;
 	static GLuint BuildingShader, projectionLocBuilding, viewLocBuilding;
+	static GLuint FBOShader, projectionLocFBO, viewLocFBO;
+	static unsigned int quadVAO, quadVBO;
 
 	static GLuint program, program1, program2, Beziershader, projectionLoc, viewLoc, modelLoc, colorLoc, lightLoc, projectionLoc1, viewLoc1, projectionLoc2, viewLoc2, projectionLoc3, viewLoc3;
 
@@ -126,6 +143,7 @@ public:
 	static void scrollwheel(GLFWwindow* window, double x, double y);
 	static void cursorPos(GLFWwindow* window, double xpos, double ypos);
 	static void mouseClick(GLFWwindow* window, int button, int action, int mods);
+	static void FBOcallback(GLFWwindow* window, int width, int height);
 
 	static std::vector<plane> frustum(float f);
 

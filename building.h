@@ -31,6 +31,7 @@ private:
 	float length;
 	float width;
 	float height;
+	
 
 	GLchar* Fside;
 	GLchar* Ftop;
@@ -54,7 +55,7 @@ public:
 	void BuildingGen4();
 	void BuildingGen5();
 
-	void draw(GLuint shaderProgram);
+	void draw(GLuint shaderProgram,bool tex);
 	void update();
 };
 

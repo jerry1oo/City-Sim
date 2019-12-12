@@ -5948,7 +5948,7 @@ void City::BuildingGen(glm::vec3 pos1, GLchar* fs, GLchar* ft){
 	}
 }
 
-void City::draw(GLuint shaderProgram) {
+void City::draw(GLuint shaderProgram,bool Cs) {
 
 	/*for (auto i : Buildings) {
 		i->draw(shaderProgram);
@@ -5964,7 +5964,7 @@ void City::draw(GLuint shaderProgram) {
 		}
 		for (int i = 0; i < 9; i++) {
 			for (auto j : B_Blocks[i]) {
-				j->draw(shaderProgram);
+				j->draw(shaderProgram, Cs);
 			}
 		}
 	}
@@ -5975,7 +5975,7 @@ void City::draw(GLuint shaderProgram) {
 		}
 		for (int i = 9; i < 18; i++) {
 			for (auto j : B_Blocks[i]) {
-				j->draw(shaderProgram);
+				j->draw(shaderProgram, Cs);
 			}
 		}
 	}
@@ -5986,7 +5986,7 @@ void City::draw(GLuint shaderProgram) {
 		}
 		for (int i = 18; i < 27; i++) {
 			for (auto j : B_Blocks[i]) {
-				j->draw(shaderProgram);
+				j->draw(shaderProgram, Cs);
 			}
 		}
 	}
@@ -5997,7 +5997,7 @@ void City::draw(GLuint shaderProgram) {
 		}
 		for (int i = 27; i < 36; i++) {
 			for (auto j : B_Blocks[i]) {
-				j->draw(shaderProgram);
+				j->draw(shaderProgram, Cs);
 			}
 		}
 	}
@@ -6008,7 +6008,7 @@ void City::draw(GLuint shaderProgram) {
 		}
 		for (int i = 36; i < 45; i++) {
 			for (auto j : B_Blocks[i]) {
-				j->draw(shaderProgram);
+				j->draw(shaderProgram, Cs);
 			}
 		}
 	}
@@ -6019,7 +6019,7 @@ void City::draw(GLuint shaderProgram) {
 		}
 		for (int i = 45; i < 54; i++) {
 			for (auto j : B_Blocks[i]) {
-				j->draw(shaderProgram);
+				j->draw(shaderProgram, Cs);
 			}
 		}
 	}
@@ -6030,7 +6030,7 @@ void City::draw(GLuint shaderProgram) {
 		}
 		for (int i = 54; i < 63; i++) {
 			for (auto j : B_Blocks[i]) {
-				j->draw(shaderProgram);
+				j->draw(shaderProgram, Cs);
 			}
 		}
 	}
@@ -6041,7 +6041,7 @@ void City::draw(GLuint shaderProgram) {
 		}
 		for (int i = 63; i < 72; i++) {
 			for (auto j : B_Blocks[i]) {
-				j->draw(shaderProgram);
+				j->draw(shaderProgram, Cs);
 			}
 		}
 	}
@@ -6052,7 +6052,7 @@ void City::draw(GLuint shaderProgram) {
 		}
 		for (int i = 72; i < 81; i++) {
 			for (auto j : B_Blocks[i]) {
-				j->draw(shaderProgram);
+				j->draw(shaderProgram, Cs);
 			}
 		}
 	}
@@ -6063,7 +6063,7 @@ void City::draw(GLuint shaderProgram) {
 		}
 		for (int i = 81; i < 90; i++) {
 			for (auto j : B_Blocks[i]) {
-				j->draw(shaderProgram);
+				j->draw(shaderProgram, Cs);
 			}
 		}
 	}
@@ -6074,7 +6074,7 @@ void City::draw(GLuint shaderProgram) {
 		}
 		for (int i = 90; i < 99; i++) {
 			for (auto j : B_Blocks[i]) {
-				j->draw(shaderProgram);
+				j->draw(shaderProgram, Cs);
 			}
 		}
 	}
@@ -6085,7 +6085,7 @@ void City::draw(GLuint shaderProgram) {
 		}
 		for (int i = 99; i < 108; i++) {
 			for (auto j : B_Blocks[i]) {
-				j->draw(shaderProgram);
+				j->draw(shaderProgram, Cs);
 			}
 		}
 	}
@@ -6096,7 +6096,7 @@ void City::draw(GLuint shaderProgram) {
 		}
 		for (int i = 108; i < 117; i++) {
 			for (auto j : B_Blocks[i]) {
-				j->draw(shaderProgram);
+				j->draw(shaderProgram, Cs);
 			}
 		}
 	}
@@ -6107,7 +6107,7 @@ void City::draw(GLuint shaderProgram) {
 		}
 		for (int i = 117; i < 126; i++) {
 			for (auto j : B_Blocks[i]) {
-				j->draw(shaderProgram);
+				j->draw(shaderProgram, Cs);
 			}
 		}
 	}
@@ -6118,7 +6118,7 @@ void City::draw(GLuint shaderProgram) {
 		}
 		for (int i = 126; i < 135; i++) {
 			for (auto j : B_Blocks[i]) {
-				j->draw(shaderProgram);
+				j->draw(shaderProgram, Cs);
 			}
 		}
 	}
@@ -6129,7 +6129,7 @@ void City::draw(GLuint shaderProgram) {
 		}
 		for (int i = 135; i < 144; i++) {
 			for (auto j : B_Blocks[i]) {
-				j->draw(shaderProgram);
+				j->draw(shaderProgram, Cs);
 			}
 		}
 	}

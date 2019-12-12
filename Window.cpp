@@ -17,20 +17,26 @@ Bezier * Window::curve;
 Track * Window::track;
 Car * Window::taxi;
 int Window::movement = 0;
+int Window::sound1 = 0;
 
 int Window::frames = 4;
 int Window::framescounter = 10;
 bool Window::blur = false;
-
+irrklang::ISound* Window::music;
+irrklang::ISound* Window::back;
+irrklang::ISound* Window::TiredSound;
 irrklang::ISoundEngine*  Window::SoundEngine = irrklang::createIrrKlangDevice();
-
+irrklang::ISoundEngine*  Window::SoundEngineB = irrklang::createIrrKlangDevice();
+irrklang::ISoundEngine*  Window::SoundEngineT = irrklang::createIrrKlangDevice();
 
 //Road * Window::road;
 //Building * Window::building;
 City * Window::city;
 //Ground * Window::ground;
 
-
+bool Window::firstMouse = true;
+float Window::yaw = -90.0f;
+float Window::pitch = 0.0f;
 
 Lighting * Window::LightSource;
 
@@ -38,6 +44,9 @@ std::vector<plane> Window::Planes;
 
 double Window::mx = 0;
 double Window::my = 0;
+
+float Window::deltaTime = 0.0f;
+float Window::lastFrame = 0.0f;
 
 bool Window::LDown = false;
 bool Window::NormCord = true;
@@ -48,8 +57,9 @@ bool Window::Dswitch = false;
 bool Window::Pswitch = false;
 bool Window::Tswitch = false;
 bool Window::Gswitch = false;
-bool Window::Cswitch = false;
+bool Window::Cswitch = true;
 bool Window::Lswitch = false;
+bool Window::Eswitch = false;
 
 bool Window::Down1 = true;
 bool Window::Down2 = false;
@@ -65,8 +75,8 @@ GLuint Window::campos;
 GLuint Window::campos1;
 GLuint Window::campos2;
 
-glm::vec3 Window::eye(0, 0, -50); // Camera position.
-glm::vec3 Window::center(0, 0, 1); // The point we are looking at.
+glm::vec3 Window::eye(0, -8, 0); // Camera position.
+glm::vec3 Window::center(0, 0, -1); // The point we are looking at.
 glm::vec3 Window::up(0, 1, 0); // The up direction of the camera.
 
 // View matrix, defined by eye, center and up.
@@ -92,12 +102,16 @@ GLuint Window::program2;
 GLuint Window::Beziershader;
 GLuint Window::RoadShader;
 GLuint Window::BuildingShader;
+GLuint Window::FBOShader;
 
 GLuint Window::projectionLocRoad;
 GLuint Window::viewLocRoad;
 
 GLuint Window::projectionLocBuilding;
 GLuint Window::viewLocBuilding;
+
+GLuint Window::projectionLocFBO;
+GLuint Window::viewLocFBO;
 
 GLuint Window::projectionLoc1; // Location of projection in shader.
 GLuint Window::projectionLoc2; // Location of projection in shader.
@@ -132,7 +146,10 @@ GLuint Window::Matshine;
 
 GLuint Window::NormCordLoc;
 
-
+unsigned int Window::FBO;
+unsigned int Window::texture;
+unsigned int Window::rbo;
+unsigned int Window::quadVAO, Window::quadVBO;
 
 bool Window::initializeProgram() {
 	// Create a shader program with a vertex shader and a fragment shader.
@@ -142,8 +159,52 @@ bool Window::initializeProgram() {
 	Beziershader = LoadShaders("shaders/Bezier.vert", "shaders/Bezier.frag");
 	RoadShader = LoadShaders("shaders/Road.vert", "shaders/Road.frag");
 	BuildingShader = LoadShaders("shaders/Building.vert", "shaders/Building.frag");
+	FBOShader = LoadShaders("shaders/FBO.vert", "shaders/FBO.frag");
+	
+	float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
+	// positions   // texCoords
+	-1.0f,  1.0f,  0.0f, 1.0f,
+	-1.0f, -1.0f,  0.0f, 0.0f,
+	 1.0f, -1.0f,  1.0f, 0.0f,
 
-	SoundEngine->play2D("CityBack.mp3", GL_TRUE);
+	-1.0f,  1.0f,  0.0f, 1.0f,
+	 1.0f, -1.0f,  1.0f, 0.0f,
+	 1.0f,  1.0f,  1.0f, 1.0f
+	};
+
+	
+	glGenVertexArrays(1, &quadVAO);
+	glGenBuffers(1, &quadVBO);
+	glBindVertexArray(quadVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+	
+	glGenFramebuffers(1, &FBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+	// create a color attachment texture
+	
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+	// create a renderbuffer object for depth and stencil attachment (we won't be sampling these)
+	
+	glGenRenderbuffers(1, &rbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height); // use a single renderbuffer object for both a depth AND stencil buffer.
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); // now actually attach it
+	// now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
 	// Check the shader program.
 	if (!program)
 	{
@@ -157,7 +218,19 @@ bool Window::initializeProgram() {
 	}
 
 	// Activate the shader program.
+	//music->setMinDistance(10.0f);
+	back = SoundEngineB->play2D("CityBack1.mp3",GL_TRUE);
+	//back->setVolume(0);
 
+	
+
+	music = SoundEngine->play3D("SF_Sound.mp3", irrklang::vec3df(0, 0, 0), true, false, true);
+	music->setIsPaused();
+
+	/*SoundEngineB->setListenerPosition(irrklang::vec3df(eye.x, eye.y, eye.z),
+		irrklang::vec3df(center.x, center.y, center.z));*/
+	SoundEngine->setListenerPosition(irrklang::vec3df(eye.x, eye.y, eye.z),
+		irrklang::vec3df(center.x, center.y, center.z));
 	glUseProgram(RoadShader);
 	projectionLocRoad = glGetUniformLocation(RoadShader, "projection");
 	viewLocRoad = glGetUniformLocation(RoadShader, "view");
@@ -175,6 +248,8 @@ bool Window::initializeProgram() {
 	projectionLoc1 = glGetUniformLocation(program1, "projection");
 	viewLoc1 = glGetUniformLocation(program1, "view");
 
+	Window::view = glm::lookAt(Window::eye, Window::center, Window::up);
+
 
 	return true;
 }
@@ -184,8 +259,9 @@ bool Window::initializeObjects()
 	// Create a cube of size 5.
 	city = new City();
 	city->BuildCity(Gswitch,Tswitch);
-	//taxi = new Car(glm::vec3(0.0f + 20.0f * 0, 2.5f, -1 * 5.0f - 5.0f * 1), 1.25, 2, 1.25, "BlackRoof.jpg", "BlackRoof.jpg");
-	skybox = new SkyBox(450.0f);
+	//taxi = new Car(glm::vec3(0.0f , 0.0f, 0.0f), 1.25, 2, 1.25, "BlackRoof.jpg", "BlackRoof.jpg");
+	//glm::translate(taximod, glm::vec3(0.0f + 20.0f * 0, 2.5f, -1 * 5.0f - 5.0f * 1));
+	skybox = new SkyBox(400.0f);
 	return true;
 }
 
@@ -277,20 +353,46 @@ void Window::resizeCallback(GLFWwindow* window, int width, int height)
 
 void Window::idleCallback()
 {
+	if (music->getIsPaused()) {
+		music->setIsPaused(false);
+	}
+	glm::vec3 L = city->SF_L->posr;
+	float x = L.x;
+	float y = L.y;
+	float z = L.z;
+	/*SoundEngineB->setListenerPosition(irrklang::vec3df(eye.x, eye.y, eye.z),
+		irrklang::vec3df(center.x, center.y, center.z));*/
+	SoundEngine->setListenerPosition(irrklang::vec3df(eye.x, eye.y, eye.z),
+		irrklang::vec3df(center.x, center.y, center.z));
+	music->setPosition(irrklang::vec3df(x, -9.0f, z));
+	music->setMinDistance(3.0f);
+	music->setVolume(50);
 	// Perform any updates as necessary. 
 	//currentObj->update(glm::mat4(1));
+	std::cout << "Pswitch: " << Pswitch << std::endl;
+	std::cout << "Cswitch: " << Cswitch << std::endl;
+	std::cout << "Tswitch: " << Tswitch << std::endl;
+	std::cout << "Gswitch: " << Gswitch << std::endl;
+	std::cout << "Lswitch: " << Lswitch << std::endl;
+	std::cout << "Eswitch: " << Eswitch << std::endl;
+	std::cout << "/////////" << std::endl;
 	if (Pswitch) {
 		if (movement > 1000) {
-			std::cout << "Pswitch: " << Pswitch << std::endl;
-			std::cout << "Cswitch: " << Cswitch << std::endl;
-			std::cout << "Tswitch: " << Tswitch << std::endl;
-			std::cout << "Gswitch: " << Gswitch << std::endl;
-			std::cout << "Lswitch: " << Lswitch << std::endl;
 			city->update(Gswitch, Tswitch, Cswitch, Lswitch);
 			movement = 0;
 		}
 		movement++;
 	}
+	if (Fswitch) {
+		if (sound1 > 1000) {			
+			/*TiredSound = SoundEngineT->play3D("tired.mp3", irrklang::vec3df(eye.x, eye.y, eye.z), true, false, true);
+			TiredSound->setVolume(100);
+			TiredSound->setIsLooped(false);*/			
+			SoundEngineT->play2D("tired.mp3", GL_FALSE);
+			sound1 = 0;
+		}		
+	}
+
 }
 
 std::vector<plane> Window::frustum(float f) {
@@ -396,9 +498,15 @@ std::vector<plane> Window::frustum(float f) {
 }
 
 void Window::displayCallback(GLFWwindow* window)
-{	
-
-	std::vector<plane> PL;
+{
+	float currentFrame = glfwGetTime();
+	deltaTime = currentFrame - lastFrame;
+	lastFrame = currentFrame;
+	if (Fswitch) {
+		eye.y = -8.0f;
+	}
+	Window::view = glm::lookAt(Window::eye, Window::center + Window::eye, Window::up);
+	/*std::vector<plane> PL;
 	int counter = 0;
 	if (Dswitch == true) {
 		PL = frustum(fov);
@@ -409,75 +517,22 @@ void Window::displayCallback(GLFWwindow* window)
 		PL = frustum(fov);
 		Window::projection = glm::perspective(glm::radians(fov),
 			double(width) / (double)height, 1.0, 1000.0);
-	}
+	}*/
 	
 
-
+	// first pass
+	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+	glEnable(GL_DEPTH_TEST);
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	// Clear the color and depth buffers.
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
 	
 	glUseProgram(RoadShader);
 	glUniformMatrix4fv(projectionLocRoad, 1, GL_FALSE, glm::value_ptr(projection));
 	glUniformMatrix4fv(viewLocRoad, 1, GL_FALSE, glm::value_ptr(view));
-	city->draw(RoadShader);
+	city->draw(RoadShader,Cswitch);
 	//taxi->draw(RoadShader, taximod);
 	//ground->draw(RoadShader);
-
-	/*glUseProgram(BuildingShader);
-	glUniformMatrix4fv(projectionLocBuilding, 1, GL_FALSE, glm::value_ptr(projection));
-	glUniformMatrix4fv(viewLocBuilding, 1, GL_FALSE, glm::value_ptr(view));
-	building->draw(BuildingShader);*/
-
-	/*glUseProgram(Beziershader);
-	glUniformMatrix4fv(projectionLoc3, 1, GL_FALSE, glm::value_ptr(projection));
-	glUniformMatrix4fv(viewLoc3, 1, GL_FALSE, glm::value_ptr(view));*/
-	//track->draw(Beziershader);
-
-	//glUseProgram(program2);
-	//// Specify the values of the uniform variables we are going to use.
-	//glUniformMatrix4fv(projectionLoc2, 1, GL_FALSE, glm::value_ptr(projection));
-	//glUniformMatrix4fv(viewLoc2, 1, GL_FALSE, glm::value_ptr(view));
-	//glUniformMatrix4fv(campos2, 1, GL_FALSE, glm::value_ptr(eye));
-	//car->draw(program2, glm::scale(glm::translate(glm::mat4(1), track->getpos()), glm::vec3(1.0f)), false, false, PL, counter);
-
-	//glUseProgram(program);
-	//Light light = LightSource->getLight();
-	//Material lightmat = LightSource->getMaterial();
-	//glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-	//glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-	//
-	//
-	//glUniform3fv(lightLoc, 1, glm::value_ptr(light.position));
-	//
-	//glUniform3fv(lightColLoc, 1, glm::value_ptr(light.color));
-	//glUniform3fv(lightPosLoc, 1, glm::value_ptr(light.position));
-
-	//glUniform3fv(lightAmbi, 1, glm::value_ptr(light.ambient));
-	//glUniform3fv(lightDiff, 1, glm::value_ptr(light.diffuse));
-	//glUniform3fv(lightSpec, 1, glm::value_ptr(light.specular));
-
-	//glUniform1f(lightConst, light.constant);
-	//glUniform1f(lightlin, light.linear);
-	//glUniform1f(lightquad, light.quadratic);
-
-	//glUniform1i(NormCordLoc, NormCord);
-
-	//
-
-	//// Render the object.
-	////currentObj->draw(program,glm::scale(glm::translate(glm::mat4(1), glm::vec3(0,0,10)), glm::vec3(1.0f)), Bswitch, Fswitch,PL,counter);
-	//counter = counter / 10;
-	//glm::mat4 model = LightSource->getModel();
-	//glm::vec3 color = LightSource->getColor();
-	//glUniform3fv(colorLoc, 1, glm::value_ptr(color));
-	//glUniform3fv(lightAmbi, 1, glm::value_ptr(glm::vec3(1.0f)));
-	//glUniform3fv(lightDiff, 1, glm::value_ptr(glm::vec3(1.0f)));
-	//glUniform3fv(lightSpec, 1, glm::value_ptr(glm::vec3(1.0f)));
-	//glUniform3fv(MatAmbi, 1, glm::value_ptr(lightmat.ambient));
-	//glUniform3fv(MatDiff, 1, glm::value_ptr(lightmat.diffuse));
-	//glUniform3fv(Matspec, 1, glm::value_ptr(lightmat.specular));
-	//glUniform1f(Matshine, lightmat.shininess);
-	//glUniform1i(NormCordLoc, NormCord);
 
 	glUseProgram(program1);
 	// Specify the values of the uniform variables we are going to use.
@@ -486,43 +541,22 @@ void Window::displayCallback(GLFWwindow* window)
 	skybox->draw(program1);
 	//LightSource->draw();
 
+	// now bind back to default framebuffer and draw a quad plane with the attached framebuffer color texture
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glDisable(GL_DEPTH_TEST); // disable depth test so screen-space quad isn't discarded due to depth test.
+	// clear all relevant buffers
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // set clear color to white (not really necessery actually, since we won't be able to see behind the quad anyways)
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	glUseProgram(FBOShader);
+	glBindVertexArray(quadVAO);
+	glBindTexture(GL_TEXTURE_2D, texture);	// use the color attachment texture as the texture of the quad plane
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	// Gets events, including input such as keyboard and mouse or window resizing.
 	glfwPollEvents();
 	// Swap buffers.
 	glfwSwapBuffers(window);
-	//int n = 20;
-	//int i = 0;
-
-	//while (true) {
-	//	if (blur == true && Bswitch == true) {
-	//		glUseProgram(RoadShader);
-	//		glUniformMatrix4fv(projectionLocRoad, 1, GL_FALSE, glm::value_ptr(projection));
-	//		glUniformMatrix4fv(viewLocRoad, 1, GL_FALSE, glm::value_ptr(view));
-	//		city->draw(RoadShader);
-
-	//		if (i == 0)
-	//			glAccum(GL_LOAD, 1.0 / n);
-	//		else
-	//			glAccum(GL_ACCUM, 1.0 / n);
-
-	//		i++;
-
-	//		if (i >= n) {
-	//			i = 0;
-	//			//blur = false;
-	//			glAccum(GL_RETURN, 1.0);
-	//			glfwPollEvents();
-	//			// Swap buffers
-	//			glfwSwapBuffers(window);
-	//		}
-
-	//	}
-
-	//	if (blur == false || Bswitch == false) {
-	//		break;
-	//	}
-	//}
 }
 
 
@@ -545,22 +579,26 @@ void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, 
 		//	// Set currentObj to bear
 		//	currentObj = cube;
 		//	break;
-		case GLFW_KEY_W:
+		/*case GLFW_KEY_W:
 			blur = true;
+			sound1++;
 			dz = 2;
 			break;
 		case GLFW_KEY_A:
 			blur = true;
+			sound1++;
 			dx = -2;
 			break;
 		case GLFW_KEY_S:
 			blur = true;
+			sound1++;
 			dz = -2;
 			break;
 		case GLFW_KEY_D:
 			blur = true;
+			sound1++;
 			dx = 2;
-			break;
+			break;*/
 		case GLFW_KEY_LEFT:
 			std::cout << "left" << std::endl;
 			//track->cpdec();
@@ -602,21 +640,20 @@ void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, 
 			break;
 		case GLFW_KEY_1:
 			// Set currentObj to dragon
-			Down1 = true;
-			Down2 = false;
-			Down3 = false;
+			
 			break;
 		case GLFW_KEY_2:
 			// Set currentObj to dragon
-			Down1 = false;
-			Down2 = true;
-			Down3 = false;
+			
 			break;
-		case GLFW_KEY_3:
-			// Set currentObj to dragon
-			Down1 = false;
-			Down2 = false;
-			Down3 = true;
+		case GLFW_KEY_E:
+			// change size
+			if (Eswitch == true) {
+				Eswitch = false;
+			}
+			else {
+				Eswitch = true;
+			}
 			break;
 		case GLFW_KEY_B:
 			// change size
@@ -704,17 +741,19 @@ void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, 
 
 		default:
 			break;
-		}
+		}		
 
-		glm::vec3 forward(view[0][2], view[1][2], view[2][2]);
-		glm::vec3 strafe(view[0][0], view[1][0], view[2][0]);
-		float speed = 0.20f;
-		eye += (-1 * dz*forward + dx * strafe) * speed;
-		if (Fswitch) {			
-			eye.y = -8.0f;
-			//taxi = new Car(eye, 1.25, 2, 1.25, "BlackRoof.jpg", "BlackRoof.jpg");
-		}
-		Window::view = glm::lookAt(Window::eye, Window::center, Window::up);
+		//glm::vec3 forward(view[0][2], view[1][2], view[2][2]);
+		//glm::vec3 strafe(view[0][0], view[1][0], view[2][0]);
+		//float speed = 0.20f;
+		//eye += (-1 * dz*forward + dx * strafe) * speed;
+		////glm::translate(taximod, eye);
+		//if (Fswitch) {			
+		//	eye.y = -8.0f;
+		//	//taxi = new Car(eye, 1.25, 2, 1.25, "BlackRoof.jpg", "BlackRoof.jpg");
+		//}
+		////center += (-1 * dz*forward + dx * strafe) * speed;
+		//Window::view = glm::lookAt(Window::eye, Window::center, Window::up);
 
 	}
 	else if (action == GLFW_RELEASE) {
@@ -733,41 +772,99 @@ void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, 
 				break;
 		}
 	}
+	float cameraSpeed = 0.5;
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+		eye += cameraSpeed * center;
+		if (Fswitch) {
+			sound1++;
+		}
+	}
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+		eye -= cameraSpeed * center;
+		if (Fswitch) {
+			sound1++;
+		}
+	}
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+		eye -= glm::normalize(glm::cross(center, up)) * cameraSpeed;
+		if (Fswitch) {
+			sound1++;
+		}
+	}
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+		eye += glm::normalize(glm::cross(center, up)) * cameraSpeed;
+		if (Fswitch) {
+			sound1++;
+		}
+	}
+	//Window::view = glm::lookAt(Window::eye, Window::center, Window::up);
 }
 
 void Window::cursorPos(GLFWwindow* window, double x, double y)
 {
 	
-	if (LDown == true) {
-		glm::vec3 lastPos2 = trackBallMapping(glm::vec2(mx, my));
-		glm::vec3 curPos2 = trackBallMapping(glm::vec2(x, y));
-		glm::vec3 dir2 = curPos2 - lastPos2;
-		float vel2 = glm::length(dir2);
-		if (vel2 > 0.0001) {
-			glm::vec3 rotAxis = glm::cross(lastPos2, curPos2);
-			float rotAngle = vel2*30;
-			
-			//glm::rotate(taximod, glm::radians(rotAngle), glm::vec3(1.0f, 0.0, 0.0));
-			//taxi->spin(rotAngle);
-			glm::mat4 TM = glm::translate(glm::mat4(1.0f),Window::eye);
-			glm::mat4 TMI = glm::inverse(TM);
-			glm::vec4 dirv = glm::vec4(center - eye, 0);			
-			glm::mat4 rotM = glm::rotate(glm::mat4(1.0f),glm::radians(rotAngle), rotAxis);
-			dirv = TM* dirv;
-			dirv = rotM* dirv;
-			dirv = TMI* dirv;
-			Window::center = (glm::vec3(dirv));
-			Window::view = glm::lookAt(Window::eye, Window::center + Window::eye, Window::up);
-						
-		}
-		//glm::vec2 mouse_delta = glm::vec2(x, y) - glm::vec2(mx,my);
-		//float mouseX_Sensitivity = 0.25f;
-		//float mouseY_Sensitivity = 0.25f;
+	//if (LDown == true) {
+	//	glm::vec3 lastPos2 = trackBallMapping(glm::vec2(mx, my));
+	//	glm::vec3 curPos2 = trackBallMapping(glm::vec2(x, y));
+	//	glm::vec3 dir2 = curPos2 - lastPos2;
+	//	float vel2 = glm::length(dir2);
+	//	if (vel2 > 0.0001) {
+	//		glm::vec3 rotAxis = glm::cross(lastPos2, curPos2);
+	//		float rotAngle = vel2*30;
+	//		
+	//		//glm::rotate(taximod, glm::radians(rotAngle), glm::vec3(1.0f, 0.0, 0.0));
+	//		//taxi->spin(rotAngle);
+	//		glm::mat4 TM = glm::translate(glm::mat4(1.0f),Window::eye);
+	//		glm::mat4 TMI = glm::inverse(TM);
+	//		glm::vec4 dirv = glm::vec4(center - eye, 0);			
+	//		glm::mat4 rotM = glm::rotate(glm::mat4(1.0f),glm::radians(rotAngle), rotAxis);
+	//		dirv = TM* dirv;
+	//		dirv = rotM* dirv;
+	//		dirv = TMI* dirv;
+	//		Window::center = (glm::vec3(dirv));
+	//		Window::view = glm::lookAt(Window::eye, Window::center + Window::eye, Window::up);
+	//					
+	//	}
+	//	//glm::vec2 mouse_delta = glm::vec2(x, y) - glm::vec2(mx,my);
+	//	//float mouseX_Sensitivity = 0.25f;
+	//	//float mouseY_Sensitivity = 0.25f;
 
+	//}
+
+	//mx = x;
+	//my = y;
+
+	/*if (firstMouse)
+	{
+		mx = x;
+		my = y;
+		firstMouse = false;
+	}*/
+	if (LDown) {
+		float xoffset = x - mx;
+		float yoffset = my - y;
+		mx = x;
+		my = y;
+
+		float sensitivity = 0.1;
+		xoffset *= sensitivity;
+		yoffset *= sensitivity;
+
+		Window::yaw += xoffset;
+		Window::pitch += yoffset;
+
+		if (pitch > 89.0f)
+			pitch = 89.0f;
+		if (pitch < -89.0f)
+			pitch = -89.0f;
+
+		glm::vec3 front;
+		front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+		front.y = sin(glm::radians(pitch));
+		front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+		Window::center = glm::normalize(front);
+		//Window::view = glm::lookAt(Window::eye, Window::center, Window::up);
 	}
-
-	mx = x;
-	my = y;
 }
 
 void Window::mouseClick(GLFWwindow* window, int button, int action, int mods) {
@@ -824,6 +921,10 @@ void Window::scrollwheel(GLFWwindow* window, double x, double y) {
 	Window::projection = glm::perspective(glm::radians(fov),
 		double(width) / (double)height, 1.0, 1000.0);
 
+}
+
+void Window::FBOcallback(GLFWwindow* window, int width, int height) {
+	glViewport(0, 0, width, height);
 }
 
 

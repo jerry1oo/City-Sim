@@ -29,8 +29,7 @@ private:
 
 	GLchar* image;
 
-	std::vector<glm::vec3> pos;
-	glm::vec3 posr;
+	std::vector<glm::vec3> pos;	
 	glm::mat4 model;
 	float length;
 	float width;
@@ -44,7 +43,7 @@ private:
 	GLuint vao, vbo, vbot, ebo;
 
 public:
-
+	glm::vec3 posr;
 	Road(glm::vec3 pos1, float l, float w, GLchar* I);
 	~Road();
 	GLuint loadTexture();

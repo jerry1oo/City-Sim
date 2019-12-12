@@ -87,7 +87,7 @@ public:
 
 	void BuildingGen(glm::vec3 pos1, GLchar* fs, GLchar* ft);
 	void BuildingGen1(glm::vec3 pos1, GLchar* fs, GLchar* ft);
-	void draw(GLuint shaderProgram);
+	void draw(GLuint shaderProgram, bool Cs);
 	void update(bool bg, bool tg, bool cg, bool l);
 };
 
