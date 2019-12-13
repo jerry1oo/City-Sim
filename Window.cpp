@@ -12,7 +12,6 @@ Triangle * Window::bunny;
 Triangle * Window::dragon;
 SkyBox * Window::skybox;
 glm::mat4 Window::taximod = glm::mat4(1);
-//BoundSphere * Window::car;
 Bezier * Window::curve;
 Track * Window::track;
 Car * Window::taxi;
@@ -29,10 +28,8 @@ irrklang::ISoundEngine*  Window::SoundEngine = irrklang::createIrrKlangDevice();
 irrklang::ISoundEngine*  Window::SoundEngineB = irrklang::createIrrKlangDevice();
 irrklang::ISoundEngine*  Window::SoundEngineT = irrklang::createIrrKlangDevice();
 
-//Road * Window::road;
-//Building * Window::building;
 City * Window::city;
-//Ground * Window::ground;
+
 
 bool Window::firstMouse = true;
 float Window::yaw = -90.0f;
@@ -56,7 +53,7 @@ bool Window::Dswitch = false;
 
 bool Window::Pswitch = false;
 bool Window::Tswitch = false;
-bool Window::Gswitch = false;
+bool Window::Gswitch = true;
 bool Window::Cswitch = true;
 bool Window::Lswitch = false;
 bool Window::Eswitch = false;
@@ -146,10 +143,15 @@ GLuint Window::Matshine;
 
 GLuint Window::NormCordLoc;
 
-unsigned int Window::FBO;
-unsigned int Window::texture;
+unsigned int Window::framebuffer;
+unsigned int Window::textureColorbuffer;
+unsigned int Window::depthBuffer;
 unsigned int Window::rbo;
-unsigned int Window::quadVAO, Window::quadVBO;
+unsigned int Window::quadVAO;
+glm::mat4 Window::prevView = glm::lookAt(Window::eye, Window::center, Window::up);
+glm::mat4 Window::newView;
+bool Window::changed = false;
+double Window::prevTime = 0;
 
 bool Window::initializeProgram() {
 	// Create a shader program with a vertex shader and a fragment shader.
@@ -160,50 +162,30 @@ bool Window::initializeProgram() {
 	RoadShader = LoadShaders("shaders/Road.vert", "shaders/Road.frag");
 	BuildingShader = LoadShaders("shaders/Building.vert", "shaders/Building.frag");
 	FBOShader = LoadShaders("shaders/FBO.vert", "shaders/FBO.frag");
-	
-	float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
-	// positions   // texCoords
-	-1.0f,  1.0f,  0.0f, 1.0f,
-	-1.0f, -1.0f,  0.0f, 0.0f,
-	 1.0f, -1.0f,  1.0f, 0.0f,
 
-	-1.0f,  1.0f,  0.0f, 1.0f,
-	 1.0f, -1.0f,  1.0f, 0.0f,
-	 1.0f,  1.0f,  1.0f, 1.0f
-	};
-
-	
-	glGenVertexArrays(1, &quadVAO);
-	glGenBuffers(1, &quadVBO);
-	glBindVertexArray(quadVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-	
-	glGenFramebuffers(1, &FBO);
-	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+	//post processing stuff
+	glGenFramebuffers(1, &framebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 	// create a color attachment texture
-	
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
+	glGenTextures(1, &textureColorbuffer);
+	glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
-	// create a renderbuffer object for depth and stencil attachment (we won't be sampling these)
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
+
+	glGenTextures(1, &depthBuffer);
+	glBindTexture(GL_TEXTURE_2D, depthBuffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthBuffer, 0);
+
 	
-	glGenRenderbuffers(1, &rbo);
-	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height); // use a single renderbuffer object for both a depth AND stencil buffer.
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); // now actually attach it
 	// now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 
 	// Check the shader program.
 	if (!program)
@@ -217,13 +199,8 @@ bool Window::initializeProgram() {
 		return false;
 	}
 
-	// Activate the shader program.
-	//music->setMinDistance(10.0f);
+	// set music
 	back = SoundEngineB->play2D("CityBack1.mp3",GL_TRUE);
-	//back->setVolume(0);
-
-	
-
 	music = SoundEngine->play3D("SF_Sound.mp3", irrklang::vec3df(0, 0, 0), true, false, true);
 	music->setIsPaused();
 
@@ -238,11 +215,6 @@ bool Window::initializeProgram() {
 	glUseProgram(BuildingShader);
 	projectionLocBuilding = glGetUniformLocation(BuildingShader, "projection");
 	viewLocBuilding = glGetUniformLocation(BuildingShader, "view");
-
-	//glUseProgram(program2);
-	//projectionLoc2 = glGetUniformLocation(program2, "projection");
-	//viewLoc2 = glGetUniformLocation(program2, "view");
-	//campos2 = glGetUniformLocation(program2, "cameraPos");
 	
 	glUseProgram(program1);
 	projectionLoc1 = glGetUniformLocation(program1, "projection");
@@ -256,11 +228,29 @@ bool Window::initializeProgram() {
 
 bool Window::initializeObjects()
 {
+	float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
+							 // positions   // texCoords
+		-1.0f,  1.0f,  0.0f, 1.0f,
+		-1.0f, -1.0f,  0.0f, 0.0f,
+		1.0f, -1.0f,  1.0f, 0.0f,
+
+		-1.0f,  1.0f,  0.0f, 1.0f,
+		1.0f, -1.0f,  1.0f, 0.0f,
+		1.0f,  1.0f,  1.0f, 1.0f
+	};
+	unsigned int quadVBO;
+	glGenVertexArrays(1, &quadVAO);
+	glGenBuffers(1, &quadVBO);
+	glBindVertexArray(quadVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices[0], GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 	// Create a cube of size 5.
 	city = new City();
 	city->BuildCity(Gswitch,Tswitch);
-	//taxi = new Car(glm::vec3(0.0f , 0.0f, 0.0f), 1.25, 2, 1.25, "BlackRoof.jpg", "BlackRoof.jpg");
-	//glm::translate(taximod, glm::vec3(0.0f + 20.0f * 0, 2.5f, -1 * 5.0f - 5.0f * 1));
 	skybox = new SkyBox(400.0f);
 	return true;
 }
@@ -268,10 +258,7 @@ bool Window::initializeObjects()
 void Window::cleanUp()
 {
 	// Deallcoate the objects.
-	//delete cube;
-	//delete bear;
-	//delete bunny;
-	//delete dragon;
+	
 
 	// Delete the shader program.
 	glDeleteProgram(program);
@@ -369,28 +356,47 @@ void Window::idleCallback()
 	music->setVolume(50);
 	// Perform any updates as necessary. 
 	//currentObj->update(glm::mat4(1));
-	std::cout << "Pswitch: " << Pswitch << std::endl;
-	std::cout << "Cswitch: " << Cswitch << std::endl;
-	std::cout << "Tswitch: " << Tswitch << std::endl;
-	std::cout << "Gswitch: " << Gswitch << std::endl;
-	std::cout << "Lswitch: " << Lswitch << std::endl;
-	std::cout << "Eswitch: " << Eswitch << std::endl;
-	std::cout << "/////////" << std::endl;
+	
 	if (Pswitch) {
 		if (movement > 1000) {
+			std::cout << "Pswitch: " << Pswitch << std::endl;
+			std::cout << "Cswitch: " << Cswitch << std::endl;
+			std::cout << "Tswitch: " << Tswitch << std::endl;
+			std::cout << "Gswitch: " << Gswitch << std::endl;
+			std::cout << "Lswitch: " << Lswitch << std::endl;
+			std::cout << "Eswitch: " << Eswitch << std::endl;
+			std::cout << "blur: " << blur << std::endl;
+			std::cout << "/////////" << std::endl;
 			city->update(Gswitch, Tswitch, Cswitch, Lswitch);
 			movement = 0;
 		}
 		movement++;
 	}
 	if (Fswitch) {
-		if (sound1 > 1000) {			
+		if (sound1 > 1000) {	
+			std::cout << "Pswitch: " << Pswitch << std::endl;
+			std::cout << "Cswitch: " << Cswitch << std::endl;
+			std::cout << "Tswitch: " << Tswitch << std::endl;
+			std::cout << "Gswitch: " << Gswitch << std::endl;
+			std::cout << "Lswitch: " << Lswitch << std::endl;
+			std::cout << "Eswitch: " << Eswitch << std::endl;
+			std::cout << "blur: " << blur << std::endl;
+			std::cout << "/////////" << std::endl;
 			/*TiredSound = SoundEngineT->play3D("tired.mp3", irrklang::vec3df(eye.x, eye.y, eye.z), true, false, true);
 			TiredSound->setVolume(100);
 			TiredSound->setIsLooped(false);*/			
 			SoundEngineT->play2D("tired.mp3", GL_FALSE);
 			sound1 = 0;
 		}		
+	}
+	if (blur) {
+		while (glfwGetTime() < prevTime + 0.09) {}
+		prevView = view;
+		if (changed) {
+			view = newView;
+			changed = false;
+		}
+		prevTime = glfwGetTime();
 	}
 
 }
@@ -506,26 +512,12 @@ void Window::displayCallback(GLFWwindow* window)
 		eye.y = -8.0f;
 	}
 	Window::view = glm::lookAt(Window::eye, Window::center + Window::eye, Window::up);
-	/*std::vector<plane> PL;
-	int counter = 0;
-	if (Dswitch == true) {
-		PL = frustum(fov);
-		Window::projection = glm::perspective(glm::radians(fov + 50.0f),
-			double(width) / (double)height, 1.0, 1000.0);
-	}
-	else {
-		PL = frustum(fov);
-		Window::projection = glm::perspective(glm::radians(fov),
-			double(width) / (double)height, 1.0, 1000.0);
-	}*/
-	
 
-	// first pass
-	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
-	glEnable(GL_DEPTH_TEST);
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	glEnable(GL_DEPTH_TEST); // enable depth testing (is disabled for rendering screen-space quad)
 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-	// Clear the color and depth buffers.
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 	
 	glUseProgram(RoadShader);
 	glUniformMatrix4fv(projectionLocRoad, 1, GL_FALSE, glm::value_ptr(projection));
@@ -539,18 +531,30 @@ void Window::displayCallback(GLFWwindow* window)
 	glUniformMatrix4fv(projectionLoc1, 1, GL_FALSE, glm::value_ptr(projection));
 	glUniformMatrix4fv(viewLoc1, 1, GL_FALSE, glm::value_ptr(view));
 	skybox->draw(program1);
-	//LightSource->draw();
 
 	// now bind back to default framebuffer and draw a quad plane with the attached framebuffer color texture
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glDisable(GL_DEPTH_TEST); // disable depth test so screen-space quad isn't discarded due to depth test.
-	// clear all relevant buffers
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // set clear color to white (not really necessery actually, since we won't be able to see behind the quad anyways)
+							  // clear all relevant buffers
+	//glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // set clear color to white (not really necessery actually, since we won't be able to see behind the quad anyways)
 	glClear(GL_COLOR_BUFFER_BIT);
+	////std::cout << "out" << std::endl;
+	if (view[0][0] != prevView[0][0]) {
+		//std::cout << "view:" << view[0][0] << std::endl;
+		//std::cout << "prevview:" << prevView[0][0] << std::endl;
+	}
 
-	glUseProgram(FBOShader);
+	glUseProgram(BuildingShader);
 	glBindVertexArray(quadVAO);
-	glBindTexture(GL_TEXTURE_2D, texture);	// use the color attachment texture as the texture of the quad plane
+	glActiveTexture(GL_TEXTURE0);
+	glUniform1i(glGetUniformLocation(BuildingShader, "screenTexture"), 0);
+	glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+	glActiveTexture(GL_TEXTURE1);
+	glUniform1i(glGetUniformLocation(BuildingShader, "depthTexture"), 1);
+	glUniformMatrix4fv(glGetUniformLocation(BuildingShader, "prevView"), 1, GL_FALSE, glm::value_ptr(projection*prevView));
+	glUniformMatrix4fv(glGetUniformLocation(BuildingShader, "view"), 1, GL_FALSE, glm::value_ptr(projection*view));
+	glUniform1i(glGetUniformLocation(BuildingShader, "blur"), blur);
+	glBindTexture(GL_TEXTURE_2D, depthBuffer);	// use the color attachment texture as the texture of the quad plane
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	// Gets events, including input such as keyboard and mouse or window resizing.
@@ -569,36 +573,20 @@ void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, 
 	// Check for a key press.
 	if (action == GLFW_PRESS || action == GLFW_REPEAT)
 	{
+		std::cout << "Pswitch: " << Pswitch << std::endl;
+		std::cout << "Cswitch: " << Cswitch << std::endl;
+		std::cout << "Tswitch: " << Tswitch << std::endl;
+		std::cout << "Gswitch: " << Gswitch << std::endl;
+		std::cout << "Lswitch: " << Lswitch << std::endl;
+		std::cout << "Eswitch: " << Eswitch << std::endl;
+		std::cout << "blur: " << blur << std::endl;
+		std::cout << "/////////" << std::endl;
 		switch (key)
 		{
 		case GLFW_KEY_ESCAPE:
 			// Close the window. This causes the program to also terminate.
 			glfwSetWindowShouldClose(window, GL_TRUE);				
 			break;
-		//case GLFW_KEY_1:
-		//	// Set currentObj to bear
-		//	currentObj = cube;
-		//	break;
-		/*case GLFW_KEY_W:
-			blur = true;
-			sound1++;
-			dz = 2;
-			break;
-		case GLFW_KEY_A:
-			blur = true;
-			sound1++;
-			dx = -2;
-			break;
-		case GLFW_KEY_S:
-			blur = true;
-			sound1++;
-			dz = -2;
-			break;
-		case GLFW_KEY_D:
-			blur = true;
-			sound1++;
-			dx = 2;
-			break;*/
 		case GLFW_KEY_LEFT:
 			std::cout << "left" << std::endl;
 			//track->cpdec();
@@ -633,19 +621,6 @@ void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, 
 				//track->incAxis('z');
 			}
 			break;
-		case GLFW_KEY_F3:
-			// Set currentObj to dragon
-			//currentObj = dragon;
-			//dragon->error();
-			break;
-		case GLFW_KEY_1:
-			// Set currentObj to dragon
-			
-			break;
-		case GLFW_KEY_2:
-			// Set currentObj to dragon
-			
-			break;
 		case GLFW_KEY_E:
 			// change size
 			if (Eswitch == true) {
@@ -657,11 +632,11 @@ void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, 
 			break;
 		case GLFW_KEY_B:
 			// change size
-			if (Bswitch == true) {
-				Bswitch = false;
+			if (blur == true) {
+				blur = false;
 			}
 			else {
-				Bswitch = true;
+				blur = true;
 			}			
 			break;
 		case GLFW_KEY_P:
@@ -686,8 +661,6 @@ void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, 
 			// change size
 			if (Fswitch == true) {
 				Fswitch = false;
-				//eye = taxi->posb;
-				//Window::view = glm::lookAt(Window::eye, Window::center, Window::up);
 			}
 			else {
 				Fswitch = true;
@@ -742,33 +715,20 @@ void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, 
 		default:
 			break;
 		}		
-
-		//glm::vec3 forward(view[0][2], view[1][2], view[2][2]);
-		//glm::vec3 strafe(view[0][0], view[1][0], view[2][0]);
-		//float speed = 0.20f;
-		//eye += (-1 * dz*forward + dx * strafe) * speed;
-		////glm::translate(taximod, eye);
-		//if (Fswitch) {			
-		//	eye.y = -8.0f;
-		//	//taxi = new Car(eye, 1.25, 2, 1.25, "BlackRoof.jpg", "BlackRoof.jpg");
-		//}
-		////center += (-1 * dz*forward + dx * strafe) * speed;
-		//Window::view = glm::lookAt(Window::eye, Window::center, Window::up);
-
 	}
 	else if (action == GLFW_RELEASE) {
 		switch (key) {
 			case GLFW_KEY_W:
-				blur = false;
+				//blur = false;
 				break;
 			case GLFW_KEY_A:
-				blur = false;
+				//blur = false;
 				break;
 			case GLFW_KEY_S:
-				blur = false;
+				//blur = false;
 				break;
 			case GLFW_KEY_D:
-				blur = false;
+				//blur = false;
 				break;
 		}
 	}
@@ -797,49 +757,10 @@ void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, 
 			sound1++;
 		}
 	}
-	//Window::view = glm::lookAt(Window::eye, Window::center, Window::up);
 }
 
 void Window::cursorPos(GLFWwindow* window, double x, double y)
 {
-	
-	//if (LDown == true) {
-	//	glm::vec3 lastPos2 = trackBallMapping(glm::vec2(mx, my));
-	//	glm::vec3 curPos2 = trackBallMapping(glm::vec2(x, y));
-	//	glm::vec3 dir2 = curPos2 - lastPos2;
-	//	float vel2 = glm::length(dir2);
-	//	if (vel2 > 0.0001) {
-	//		glm::vec3 rotAxis = glm::cross(lastPos2, curPos2);
-	//		float rotAngle = vel2*30;
-	//		
-	//		//glm::rotate(taximod, glm::radians(rotAngle), glm::vec3(1.0f, 0.0, 0.0));
-	//		//taxi->spin(rotAngle);
-	//		glm::mat4 TM = glm::translate(glm::mat4(1.0f),Window::eye);
-	//		glm::mat4 TMI = glm::inverse(TM);
-	//		glm::vec4 dirv = glm::vec4(center - eye, 0);			
-	//		glm::mat4 rotM = glm::rotate(glm::mat4(1.0f),glm::radians(rotAngle), rotAxis);
-	//		dirv = TM* dirv;
-	//		dirv = rotM* dirv;
-	//		dirv = TMI* dirv;
-	//		Window::center = (glm::vec3(dirv));
-	//		Window::view = glm::lookAt(Window::eye, Window::center + Window::eye, Window::up);
-	//					
-	//	}
-	//	//glm::vec2 mouse_delta = glm::vec2(x, y) - glm::vec2(mx,my);
-	//	//float mouseX_Sensitivity = 0.25f;
-	//	//float mouseY_Sensitivity = 0.25f;
-
-	//}
-
-	//mx = x;
-	//my = y;
-
-	/*if (firstMouse)
-	{
-		mx = x;
-		my = y;
-		firstMouse = false;
-	}*/
 	if (LDown) {
 		float xoffset = x - mx;
 		float yoffset = my - y;
@@ -863,7 +784,8 @@ void Window::cursorPos(GLFWwindow* window, double x, double y)
 		front.y = sin(glm::radians(pitch));
 		front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 		Window::center = glm::normalize(front);
-		//Window::view = glm::lookAt(Window::eye, Window::center, Window::up);
+		newView = glm::lookAt(Window::eye, Window::center + Window::eye, Window::up);
+		changed = true;
 	}
 }
 
@@ -871,7 +793,7 @@ void Window::mouseClick(GLFWwindow* window, int button, int action, int mods) {
 	if (action == GLFW_PRESS) {
 		switch (button) {
 			case GLFW_MOUSE_BUTTON_LEFT:
-				blur = true;
+				//blur = true;
 				glfwGetCursorPos(window, &mx, &my);
 				LDown = true;
 				break;
@@ -880,7 +802,7 @@ void Window::mouseClick(GLFWwindow* window, int button, int action, int mods) {
 	else if (action == GLFW_RELEASE) {
 		switch (button) {
 			case GLFW_MOUSE_BUTTON_LEFT:
-				blur = false;
+				//blur = false;
 				LDown = false;
 				break;
 		}

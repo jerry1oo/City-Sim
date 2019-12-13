@@ -43,10 +43,6 @@ public:
 	static int framescounter;
 	static bool blur;
 
-	static unsigned int FBO;
-	static unsigned int texture;
-	static unsigned int rbo;
-
 	static glm::mat4 taximod;
 	static glm::mat4 taxitran;
 	static irrklang::ISoundEngine*  SoundEngine;
@@ -110,8 +106,13 @@ public:
 	static glm::mat4 projection;
 	static double fov;
 	static glm::mat4 view;
+	static glm::mat4 prevView;
+	static glm::mat4 newView;
 	static glm::vec3 eye, center, up;
-	
+	static unsigned int framebuffer, textureColorbuffer, depthBuffer, rbo, quadVAO;
+	static double prevTime;
+	static bool changed;
+
 
 	static glm::vec3 fc, ftl, ftr, fbl, fbr, nc, ntl, ntr, nbl, nbr, a, normalRight, right;
 	static std::vector<plane> Planes;
@@ -121,7 +122,8 @@ public:
 	static GLuint RoadShader, projectionLocRoad, viewLocRoad;
 	static GLuint BuildingShader, projectionLocBuilding, viewLocBuilding;
 	static GLuint FBOShader, projectionLocFBO, viewLocFBO;
-	static unsigned int quadVAO, quadVBO;
+	//static unsigned int quadVAO, quadVBO;
+	
 
 	static GLuint program, program1, program2, Beziershader, projectionLoc, viewLoc, modelLoc, colorLoc, lightLoc, projectionLoc1, viewLoc1, projectionLoc2, viewLoc2, projectionLoc3, viewLoc3;
 

@@ -811,6 +811,9 @@ GLuint Building::loadTexture(GLchar* image)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
 	// load and generate the texture
 	int width, height, nrChannels;
 	unsigned char *data = stbi_load(image, &width, &height, &nrChannels, 0);
@@ -824,6 +827,8 @@ GLuint Building::loadTexture(GLchar* image)
 		std::cout << "Failed to load texture" << std::endl;
 	}
 	stbi_image_free(data);
+
+
 	return texture1;
 }
 
@@ -838,87 +843,6 @@ Building::~Building()
 
 void Building::draw(GLuint shaderProgram, bool tex)
 {
-	/*GLchar* texside;
-	GLchar* textop;
-	if(tex) {
-		int tex = rand() % 3;
-		if (tex == 0) {
-			int tex1 = rand() % 8 + 1;
-			if (tex1 == 1) {
-				texside = "NightBuilding1_1.jpg";
-				textop = "BlackRoof.jpg";
-			}
-			if (tex1 == 2) {
-				texside = "NightBuilding1_2.jpg";
-				textop = "BlackRoof.jpg";
-			}
-			if (tex1 == 3) {
-				texside = "NightBuilding1_3.jpg";
-				textop = "BlackRoof.jpg";
-			}
-			if (tex1 == 4) {
-				texside = "NightBuilding1_4.jpg";
-				textop = "BlackRoof.jpg";
-			}
-			if (tex1 == 5) {
-				texside = "NightBuilding1_5.jpg";
-				textop = "BlackRoof.jpg";
-			}
-			if (tex1 == 6) {
-				texside = "NightBuilding1_6.jpg";
-				textop = "BlackRoof.jpg";
-			}
-			if (tex1 == 7) {
-				texside = "NightBuilding1_7.jpg";
-				textop = "BlackRoof.jpg";
-			}
-			if (tex1 == 8) {
-				texside = "NightBuilding1_8.jpg";
-				textop = "BlackRoof.jpg";
-			}
-		}
-		else if (tex == 1) {
-			int tex1 = rand() % 4 + 1;
-			if (tex1 == 1) {
-				texside = "NightBuilding1_1.jpg";
-				textop = "BlackRoof.jpg";
-			}
-			if (tex1 == 2) {
-				texside = "NightBuilding1_2.jpg";
-				textop = "BlackRoof.jpg";
-			}
-			if (tex1 == 3) {
-				texside = "NightBuilding1_3.jpg";
-				textop = "BlackRoof.jpg";
-			}
-			if (tex1 == 4) {
-				texside = "NightBuilding1_4.jpg";
-				textop = "BlackRoof.jpg";
-			}
-		}
-		else if (tex == 2) {
-			int tex1 = rand() % 4 + 1;
-			if (tex1 == 1) {
-				texside = "NightBuilding3_1.jpg";
-				textop = "BlackRoof.jpg";
-			}
-			if (tex1 == 2) {
-				texside = "NightBuilding3_2.jpg";
-				textop = "BlackRoof.jpg";
-			}
-			if (tex1 == 3) {
-				texside = "NightBuilding3_3.jpg";
-				textop = "BlackRoof.jpg";
-			}
-			if (tex1 == 4) {
-				texside = "NightBuilding3_4.jpg";
-				textop = "BlackRoof.jpg";
-			}
-		}
-		texture = loadTexture(texside);
-		textureR = loadTexture(textop);
-
-	}*/
 	colorLoc = glGetUniformLocation(shaderProgram, "color");
 	glUniform3fv(colorLoc, 1, glm::value_ptr(color));
 	modelLoc = glGetUniformLocation(shaderProgram, "model");
